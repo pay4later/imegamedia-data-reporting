@@ -1,0 +1,6 @@
+/vendor
+.phpunit.result.cache
+/.idea/
+.DS_Store
+.php_cs.cache
+tests/coverage/

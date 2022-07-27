@@ -1,0 +1,57 @@
+{
+    "name": "imega/data-reporting",
+    "description": "Data Reporting for Imegamedia",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "illuminate/cache": "^9.0",
+        "illuminate/config": "^9.0",
+        "illuminate/http": "^9.0",
+        "illuminate/support": "^9.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5",
+        "nunomaduro/collision": "^6.2",
+        "orchestra/testbench": "^7.6",
+        "phpunit/phpunit": "^9.5.10",
+        "roave/security-advisories": "dev-latest"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "bin-compat": "full"
+    },
+    "autoload": {
+        "psr-4": {
+            "Imega\\DataReporting\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Imega\\DataReporting\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Imega\\DataReporting\\Providers\\DataReportingServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@run-install-hooks"
+        ],
+        "run-install-hooks": [
+            "mkdir -p .git/hooks",
+            "find .git/hooks -type f -exec rm {} \\;",
+            "find .githooks -type f -exec cp -rf {} .git/hooks/ \\;"
+        ],
+        "test": "./vendor/phpunit/phpunit/phpunit --do-not-cache-result --exclude-group ignore,broken",
+        "coverage": "php -d pcov.enabled=1 vendor/phpunit/phpunit/phpunit --do-not-cache-result --coverage-html tests/coverage --exclude-group ignore,broken"
+    }
+}

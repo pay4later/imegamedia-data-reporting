@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Get name of the repo name
+REPO=${PWD##*/}
+
+# Get the absolute path of the current directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Run Unit Tests
+echo -n "+ Starting unit tests for ${REPO} "
+. "$DIR/phpunit.sh"
+run_unit_tests
