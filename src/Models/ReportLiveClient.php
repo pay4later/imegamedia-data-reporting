@@ -2,7 +2,7 @@
 
 namespace Imega\DataReporting\Models;
 
-final class LiveClientReport extends AngusModel
+final class ReportLiveClient extends AngusModel
 {
     /**
      * The attributes that are mass assignable.

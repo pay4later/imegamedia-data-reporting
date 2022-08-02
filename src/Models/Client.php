@@ -2,6 +2,9 @@
 
 namespace Imega\DataReporting\Models;
 
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+
 final class Client extends AngusModel
 {
     /**
@@ -62,4 +65,127 @@ final class Client extends AngusModel
         'checkout_intent_validity_time',
         'process_csn_requests',
     ];
+
+    /**
+     * Scope a query to only include active users.
+     *
+     * @param EloquentBuilder $query
+     * @return EloquentBuilder
+     */
+    public function scopeActive(EloquentBuilder $query, string $alias = null): EloquentBuilder
+    {
+        $field = 'licence_status';
+        $column = $alias ? $alias . '.' . $field : $field;
+        return $query->where($column, config('data-reporting.client-statuses.ACTIVE'));
+    }
+
+    /**
+     * Scope a query to only include active users.
+     *
+     * @param EloquentBuilder $query
+     * @return EloquentBuilder
+     */
+    public function scopeInactive(EloquentBuilder $query): EloquentBuilder
+    {
+        return $query->where('licence_status', config('data-reporting.client-statuses.INACTIVE'));
+    }
+
+    /**
+     * Scope a query to only include users of a given test_mode.
+     *
+     * @param EloquentBuilder $query
+     * @param  bool  $type
+     * @return EloquentBuilder
+     */
+    public function scopeTestMode(EloquentBuilder $query, bool $type)
+    {
+        return $query->where('test_mode', $type);
+    }
+
+    /**
+     * Scope a query to only include live users.
+     *
+     * @param EloquentBuilder $query
+     * @return EloquentBuilder
+     */
+    public function scopeLive(EloquentBuilder $query): EloquentBuilder
+    {
+        return $query->where('name', 'NOT LIKE', '\_%');
+    }
+
+    public static function totalBillableQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->active()
+            ->live()
+            ->whereNull('c1.deleted_at')
+            ->getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function totalInactiveQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->inactive()
+            ->whereNull('deleted_at')
+            ->getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function totalActiveLiveQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->active()
+            ->testMode(false)
+            ->whereNull('deleted_at')
+            ->getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function totalActiveTestQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->active()
+            ->testMode(true)
+            ->whereNull('deleted_at')
+            ->getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function totalActiveNoDemoLiveQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->active()
+            ->testMode(false)
+            ->live()
+            ->whereNull('deleted_at')
+            ->getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public static function totalActiveNoDemoTestQuery(): QueryBuilder
+    {
+        return Client::selectRaw('COUNT(id)')
+            ->whereColumn('finance_provider', 'c1.finance_provider')
+            ->active()
+            ->testMode(true)
+            ->live()
+            ->whereNull('deleted_at')
+            ->getQuery();
+    }
 }

@@ -3,10 +3,8 @@
 namespace Imega\DataReporting\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
 use Imega\DataReporting\Models\Client;
-use Imega\DataReporting\Models\LiveClientReport;
+use Imega\DataReporting\Models\ReportLiveClient;
 
 final class LiveClients extends Command
 {
@@ -31,99 +29,29 @@ final class LiveClients extends Command
      */
     public function handle(): void
     {
-        LiveClientReport::insert($this->reportData())
+        ReportLiveClient::insert($this->reportData())
             ? $this->output->success('Live client report data created')
             : $this->output->error('Unable to write live client report data');
     }
 
     private function reportData(): array
     {
-        $qb = Client::query()->from('clients', 'c1') //DB::connection('data-reporting-angus')->table('clients', 'c1')
-            ->select('c1.finance_provider')
+        $clientAlias = 'c1';
+        $qb = Client::query()
+            ->from('clients', $clientAlias)
+            ->select($clientAlias . '.finance_provider')
             ->selectRaw("DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') as sampled_at")
-            ->selectRaw('COUNT(c1.id) as total_active')
+            ->selectRaw('COUNT(' . $clientAlias . '.id) as total_active')
+            ->selectSub(Client::totalBillableQuery(), 'total_billable')
+            ->selectSub(Client::totalInactiveQuery(), 'total_inactive')
+            ->selectSub(Client::totalActiveLiveQuery(), 'total_active_live')
+            ->selectSub(Client::totalActiveTestQuery(), 'total_active_test')
+            ->selectSub(Client::totalActiveNoDemoLiveQuery(), 'total_active_nodemo_live')
+            ->selectSub(Client::totalActiveNoDemoTestQuery(), 'total_active_nodemo_test')
+            ->active($clientAlias)
+            ->whereNull($clientAlias . '.deleted_at')
+            ->groupBy($clientAlias . '.finance_provider');
 
-            // Total Billable
-            ->selectSub(
-                static fn (Builder $query) => $query
-                ->selectRaw('COUNT(c2.id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-                ->where('c2.name', 'NOT LIKE', '\_%')
-                ->whereNull('c1.deleted_at'),
-                'total_billable'
-            )
-
-            // Total Inactive
-            ->selectSub(
-                static fn (Builder $query) => $query
-                ->selectRaw('COUNT(id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.INACTIVE'))
-                ->whereNull('c2.deleted_at'),
-                'total_inactive'
-            )
-
-            // Total Active Live
-            ->selectSub(
-                fn (Builder $query) => $query
-                ->selectRaw('COUNT(id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-                ->where('c2.test_mode', false)
-                ->whereNull('c2.deleted_at'),
-                'total_active_live'
-            )
-
-            // Total Active Test
-            ->selectSub(
-                fn (Builder $query) => $query
-                ->selectRaw('COUNT(id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-                ->where('c2.test_mode', true)
-                ->whereNull('c2.deleted_at'),
-                'total_active_test'
-            )
-
-            // Total Active (No Demo) Live
-            ->selectSub(
-                static fn (Builder $query) => $query
-                ->selectRaw('COUNT(id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-                ->where('c2.test_mode', false)
-                ->where('c2.name', 'NOT LIKE', '\_%')
-                ->whereNull('c2.deleted_at'),
-                'total_active_nodemo_live'
-            )
-
-            // Total Active (No Demo) Test
-            ->selectSub(
-                static fn (Builder $query) => $query
-                ->selectRaw('COUNT(id)')
-                ->from('clients', 'c2')
-                ->whereColumn('c2.finance_provider', 'c1.finance_provider')
-                ->where('c2.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-                ->where('c2.test_mode', true)
-                ->where('c2.name', 'NOT LIKE', '\_%')
-                ->whereNull('c2.deleted_at'),
-                'total_active_nodemo_test'
-            )
-            ->where('c1.licence_status', config('data-reporting.client-statuses.ACTIVE'))
-            ->whereNull('c1.deleted_at')
-            ->groupBy('c1.finance_provider');
-
-
-        $x = $qb->get()->toArray();
-
-        dd($x);
-
-        return array_map(fn ($row) => (array)$row, $qb->get()->toArray());
+        return array_map(fn($row) => (array)$row, $qb->get()->toArray());
     }
 }
