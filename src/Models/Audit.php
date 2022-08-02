@@ -2,11 +2,12 @@
 
 namespace Imega\DataReporting\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-final class Audit extends Model
+final class Audit extends AngusModel
 {
+
     /**
+     * The attributes that are mass assignable.
+     *
      * @var array<string>
      */
     protected $fillable = [
@@ -30,11 +31,4 @@ final class Audit extends Model
         'appurlparams',
         'auditkey',
     ];
-
-    /**
-     * The connection name for the model.
-     *
-     * @var string|null
-     */
-    protected $connection = 'data-reporting-source';
 }

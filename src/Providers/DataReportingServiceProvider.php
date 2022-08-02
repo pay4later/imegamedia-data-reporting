@@ -2,11 +2,10 @@
 
 namespace Imega\DataReporting\Providers;
 
-use AuditRepositoryContract;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
-use Imega\DataReporting\Models\Audit;
+use Imega\DataReporting\Console\LiveClients;
 
 /**
  * Class DataReportingServiceProvider
@@ -22,8 +21,14 @@ final class DataReportingServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                LiveClients::class,
+            ]);
+        }
+
         $this->registerPublishing();
-        $this->setConnection();
+        $this->setConnections();
     }
 
     /**
@@ -34,8 +39,6 @@ final class DataReportingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/data-reporting.php', 'data-reporting');
-
-        $this->app->bind(AuditRepositoryContract::class, Audit::class);
     }
 
     /**
@@ -57,9 +60,10 @@ final class DataReportingServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function setConnection(): void
+    private function setConnections(): void
     {
-        Config::set('database.connections.data-reporting-source', Config::get('data-reporting.database.source'));
+        Config::set('database.connections.data-reporting-angus', Config::get('data-reporting.database.source.angus'));
+        Config::set('database.connections.data-reporting-orders', Config::get('data-reporting.database.source.ordersdb'));
         Config::set('database.connections.data-reporting-roll-up', Config::get('data-reporting.database.roll-up'));
     }
 }

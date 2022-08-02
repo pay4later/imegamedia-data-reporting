@@ -2,11 +2,11 @@
 
 namespace Imega\DataReporting\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-final class LiveClientReport extends Model
+final class LiveClientReport extends AngusModel
 {
     /**
+     * The attributes that are mass assignable.
+     *
      * @var array<string>
      */
     protected $fillable = [
@@ -18,6 +18,6 @@ final class LiveClientReport extends Model
         'total_active_live',
         'total_active_test',
         'total_active_nodemo_live',
-        'total_active_nodemo_test'
+        'total_active_nodemo_test',
     ];
 }
