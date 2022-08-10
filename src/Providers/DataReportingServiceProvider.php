@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Imega\DataReporting\Console\LiveClients;
+use Imega\DataReporting\Console\HourlyReports;
 
 /**
  * Class DataReportingServiceProvider
@@ -24,6 +25,7 @@ final class DataReportingServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 LiveClients::class,
+                HourlyReports::class
             ]);
         }
 

@@ -26,6 +26,27 @@ return [
         'INACTIVE' => env('DATA_REPORTING_CLIENT_ACTIVE', 'INACTIVE'),
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Approved statuses
+    |--------------------------------------------------------------------------
+    |
+    | A list of approved statuses
+    |
+    */
+    'approved-statuses' => [
+        'converted',
+        'VERIFIED',
+        'READY',
+        'COMPLETE',
+        '5',
+        'signed',
+        'ACCEPTED',
+        'Live',
+        'Order Release Verified'
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
