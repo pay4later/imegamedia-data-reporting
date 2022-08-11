@@ -2,12 +2,14 @@
 
 namespace Imega\DataReporting\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Imega\DataReporting\Traits\QueryDateTrait;
 
-final class CSNAudit extends AngusModel
+final class CsnAudit extends AngusModel
 {
+    use QueryDateTrait;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -20,21 +22,8 @@ final class CSNAudit extends AngusModel
         'order_id',
         'csn_status',
         'platform_status',
-        'responses'
+        'responses',
     ];
-
-    protected $table = 'csn_audits';
-
-    /**
-     * Scope a query to only include csns created today.
-     *
-     * @param EloquentBuilder $query
-     * @return EloquentBuilder
-     */
-    public function scopeCreatedLastHour(EloquentBuilder $query): EloquentBuilder
-    {
-        return $query->where('created_at', Carbon::now()->today()->toDateTimeString());
-    }
 
     /**
      * Scope a query to only include csns with specified statuses.
@@ -52,11 +41,11 @@ final class CSNAudit extends AngusModel
      */
     public static function totalUniqueCsns(): QueryBuilder
     {
-        return CSNAudit::selectRaw('COUNT(id)')
+        return CsnAudit::selectRaw('COUNT(id)')
             ->whereColumn('finance_provider_id', 'ca1.finance_provider_id')
             ->createdLastHour()
-            ->where(static fn ($query) => $query
-                ->whereIn('id', CSNAudit::selectRaw('MAX(id)')->createdLastHour()->groupBy('order_id'))
+            ->where(static fn($query) => $query
+                ->whereIn('id', CsnAudit::selectRaw('MAX(id)')->createdLastHour()->groupBy('order_id'))
             )
             ->getQuery();
     }
@@ -66,14 +55,20 @@ final class CSNAudit extends AngusModel
      */
     public static function totalUniqueAcceptedCsns(): QueryBuilder
     {
-        return CSNAudit::selectRaw('COUNT(id)')
+        return CsnAudit::selectRaw('COUNT(id)')
             ->whereColumn('finance_provider_id', 'ca1.finance_provider_id')
             ->createdLastHour()
-            ->where(static fn ($query) => $query
-                ->whereIn('id', CSNAudit::selectRaw('MAX(id)')->createdLastHour()->groupBy('order_id'))
-            )
             ->statusOptions(config('data-reporting.approved-statuses'))
             ->getQuery();
+    }
+
+    public function calculateAcceptedRatePercentage(int $acceptedCsns, int $uniqueCsns): int
+    {
+        if ($acceptedCsns !== 0 && $uniqueCsns !== 0) {
+            return ($acceptedCsns / $uniqueCsns) * 100;
+        }
+
+        return 0;
     }
 
 }

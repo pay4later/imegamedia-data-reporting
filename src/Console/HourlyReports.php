@@ -4,7 +4,7 @@ namespace Imega\DataReporting\Console;
 
 use Illuminate\Console\Command;
 use Imega\DataReporting\Models\Audit;
-use Imega\DataReporting\Models\CSNAudit;
+use Imega\DataReporting\Models\CsnAudit;
 
 final class HourlyReports extends Command
 {
@@ -54,24 +54,17 @@ final class HourlyReports extends Command
     private function csnAcceptanceRate(): array
     {
         $csnAlias = 'ca1';
-        $qb = CSNAudit::query()
+        $qb = CsnAudit::query()
             ->from('csn_audits', $csnAlias)
             ->select($csnAlias.'.finance_provider_id')
-            ->selectSub(CSNAudit::totalUniqueCsns(), 'total_unique_csns')
-            ->selectSub(CSNAudit::totalUniqueAcceptedCsns(), 'total_unique_accepted_csns')
+            ->selectRaw('0 AS acceptance_rate')
+            ->selectSub(CsnAudit::totalUniqueCsns(), 'total_unique_csns')
+            ->selectSub(CsnAudit::totalUniqueAcceptedCsns(), 'total_unique_accepted_csns')
             ->groupBy([$csnAlias.'.finance_provider_id', ]);
 
-        return array_map(fn ($row) => $this->calculateCsnAcceptanceRate($row), $qb->get()->toArray());
-    }
-
-    private function calculateCsnAcceptanceRate(array $row): array
-    {
-        if($row['total_unique_accepted_csns'] != 0 )
-        {
-            $row['acceptanceRate'] = ($row['total_unique_accepted_csns'] / $row['total_unique_csns']) * 100;
-        } else {
-            $row['acceptanceRate'] = 0;
-        }
-        return $row;
+        return $qb->get()->map(static function (CsnAudit $row) {
+            $row->acceptance_rate = $row->calculateAcceptedRatePercentage($row->total_unique_accepted_csns, $row->total_unique_csns);
+            return $row;
+        })->toArray();
     }
 }
