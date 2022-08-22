@@ -1,15 +1,13 @@
 <?php
 
-namespace Imega\DataReporting\Models;
+namespace Imega\DataReporting\Models\Orders;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Imega\DataReporting\Requests\ListOrderRequest;
 
 /**
- * Imega\DataReporting\Models
+ * Imega\DataReporting\Models\Orders
  *
  * @property int $orderid
  * @property int $statusid
@@ -66,7 +64,7 @@ final class Order extends Model
     public const STATUS_HOLDING_AREA_FOR_DEVELOPMENT_TASKS = 14;
     public const STATUS_DEKO_DIRECT_INTEGRATIONS = 15;
 
-    protected array $searchableJobTypes = [
+    public const SEARCHABLE_JOB_TYPES = [
         self::JOB_TYPE_NEW_INSTALL,
         self::JOB_TYPE_MIGRATION_UPGRADE,
         self::JOB_TYPE_OTHER_TASK,
@@ -74,7 +72,7 @@ final class Order extends Model
         self::JOB_TYPE_MULTI_LENDER,
     ];
 
-    protected array $searchableStatuses = [
+    public const SEARCHABLE_STATUSES = [
         self::STATUS_AWAITING_ACCOUNT_INFO,
         self::STATUS_DETAILS_RECEIVED,
         self::STATUS_SCHEDULED_AND_WAITING,
@@ -91,39 +89,22 @@ final class Order extends Model
         self::STATUS_DEKO_DIRECT_INTEGRATIONS,
     ];
 
-    public function getOrdersByFilter(ListOrderRequest $request): Collection
-    {
-        $qb = $this->newQuery()
-            ->select(['orderid', 'invoiceid', 'company', 'finance', 'package', 'email', 'created', 'statusid'])
-            ->statusNotTest();
-
-        $plainWhereFilters = [
-            'jobtype' => 'job_type',
-        ];
-
-        foreach ($plainWhereFilters as $column => $requestValue) {
-            if ($request->$requestValue) {
-                $qb->where($column, $request->$requestValue);
-            }
-        }
-
-        if ($request->finance_provider) {
-            $qb->where('finance', 'LIKE', Str::of($request->finance_provider)->wrap('%'));
-        }
-
-        if ($request->month) {
-            $qb->whereMonth('created', $request->month);
-        }
-
-        if ($request->year) {
-            $qb->whereYear('created', $request->year);
-        }
-
-        return $qb->orderBy('orderid', 'DESC')->get();
-    }
-
     public function scopeStatusNotTest(EloquentBuilder $query): EloquentBuilder
     {
         return $query->whereNot('statusid', self::STATUS_MISC);
+    }
+
+    public function scopeJobType(EloquentBuilder $query, string $jobType): EloquentBuilder
+    {
+        if (!in_array($jobType, Order::SEARCHABLE_JOB_TYPES)) {
+            return $query;
+        }
+
+        return $query->where('jobtype', $jobType);
+    }
+
+    public function scopeFinanceProvider(EloquentBuilder $query, string $financeProvider): EloquentBuilder
+    {
+        return $query->where('finance', 'LIKE', Str::of($financeProvider)->wrap('%'));
     }
 }

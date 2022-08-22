@@ -1,7 +1,23 @@
 <?php
 
-namespace Imega\DataReporting\Models;
+namespace Imega\DataReporting\Models\Angus;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+
+/**
+ * Imega\DataReporting\Models\Angus
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $alias
+ * @property string|null $image
+ * @property string $checkout_url
+ * @property string|null $test_checkout_url
+ * @property string|null $dev_checkout_url
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 final class FinanceProvider extends AngusModel
 {
     public const ALIAS_AFFORDITNOW = 'afforditnow';
@@ -27,18 +43,8 @@ final class FinanceProvider extends AngusModel
     public const ALIAS_TEST = 'test';
     public const ALIAS_V12 = 'v12';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string>
-     */
-    protected $fillable = [
-        'name',
-        'alias',
-        'calculator_url',
-        'checkout_url',
-        'test_checkout_url',
-        'dev_checkout_url',
-        'image',
-    ];
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class, 'finance_provider');
+    }
 }

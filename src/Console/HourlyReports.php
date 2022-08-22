@@ -3,8 +3,10 @@
 namespace Imega\DataReporting\Console;
 
 use Illuminate\Console\Command;
-use Imega\DataReporting\Models\Audit;
-use Imega\DataReporting\Models\CsnAudit;
+use Imega\DataReporting\Models\RollUp\AcceptanceRate;
+use Imega\DataReporting\Models\RollUp\TotalApplication;
+use Imega\DataReporting\Repositories\AuditRepository;
+use Imega\DataReporting\Repositories\CsnAuditRepository;
 
 final class HourlyReports extends Command
 {
@@ -20,7 +22,22 @@ final class HourlyReports extends Command
      *
      * @var string
      */
-    protected $description = '';
+    protected $description = 'Generated roll-up reports saved every hour';
+
+    private AuditRepository $auditRepo;
+    private CsnAuditRepository $csnAuditRepo;
+
+    public function __construct
+    (
+        AuditRepository $auditRepository,
+        CsnAuditRepository $csnAuditRepository
+    )
+    {
+        parent::__construct();
+
+        $this->auditRepo = $auditRepository;
+        $this->csnAuditRepo = $csnAuditRepository;
+    }
 
     /**
      * Execute the console command.
@@ -29,42 +46,23 @@ final class HourlyReports extends Command
      */
     public function handle(): void
     {
-
-        //TODO Currently no where for these reports to go, need to make table(s) for this data
-        dd($this->csnAcceptanceRate());
+        $this->applicationCounts();
+        $this->acceptanceRates();
     }
 
-    private function applicationAmountAndValue(): array
+    private function applicationCounts(): void
     {
-        $auditAlias = 'a1';
-        $qb = Audit::query()
-            ->from('audits', $auditAlias)
-            ->select($auditAlias . '.retailer')
-            ->joinClients()
-            ->selectRaw("DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') as sampled_at")
-            ->selectRaw('COUNT(*) as total_applications')
-            ->selectRaw('ROUND(sum(orderamount),2)/1000000 as total_application_value')
-            ->clientsTestMode(false)
-            ->createdToday()
-            ->groupBy($auditAlias.'.retailer');
-
-        return array_map(fn($row) => (array)$row, $qb->get()->toArray());
+        TotalApplication::upsert(
+            $this->auditRepo->getLastHourApplicationCounts()->toArray(),
+            ['finance_provider_id', 'sampled_at'],
+        );
     }
 
-    private function csnAcceptanceRate(): array
+    private function acceptanceRates(): void
     {
-        $csnAlias = 'ca1';
-        $qb = CsnAudit::query()
-            ->from('csn_audits', $csnAlias)
-            ->select($csnAlias.'.finance_provider_id')
-            ->selectRaw('0 AS acceptance_rate')
-            ->selectSub(CsnAudit::totalUniqueCsns(), 'total_unique_csns')
-            ->selectSub(CsnAudit::totalUniqueAcceptedCsns(), 'total_unique_accepted_csns')
-            ->groupBy([$csnAlias.'.finance_provider_id', ]);
-
-        return $qb->get()->map(static function (CsnAudit $row) {
-            $row->acceptance_rate = $row->calculateAcceptedRatePercentage($row->total_unique_accepted_csns, $row->total_unique_csns);
-            return $row;
-        })->toArray();
+        AcceptanceRate::upsert(
+            $this->csnAuditRepo->getLastHourAcceptanceRates()->toArray(),
+            ['finance_provider_id', 'sampled_at'],
+        );
     }
 }

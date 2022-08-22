@@ -1,34 +1,36 @@
 <?php
 
-namespace Imega\DataReporting\Models;
+namespace Imega\DataReporting\Models\Angus;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Carbon;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
+/**
+ * Imega\DataReporting\Models\Angus
+ *
+ * @property int $id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $finance_provider_id
+ * @property string $ip_address
+ * @property int $client_id
+ * @property string $order_id
+ * @property string $csn_status
+ * @property string|null $platform_status
+ * @property array $responses
+ * @property string|null $imega_status
+ */
 final class CsnAudit extends AngusModel
 {
     use QueryDateTrait;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string>
-     */
-    protected $fillable = [
-        'finance_provider_id',
-        'ip_address',
-        'client_id',
-        'order_id',
-        'csn_status',
-        'platform_status',
-        'responses',
-    ];
-
-    /**
      * Scope a query to only include csns with specified statuses.
      *
      * @param EloquentBuilder $query
+     * @param array $statuses
      * @return EloquentBuilder
      */
     public function scopeStatusOptions(EloquentBuilder $query, array $statuses): EloquentBuilder
@@ -37,29 +39,29 @@ final class CsnAudit extends AngusModel
     }
 
     /**
-     * @return QueryBuilder
+     * @param string $whereColumnSecond
+     * @return EloquentBuilder
      */
-    public static function totalUniqueCsns(): QueryBuilder
+    public static function totalUniqueCsnsInLastHour(string $whereColumnSecond): EloquentBuilder
     {
         return CsnAudit::selectRaw('COUNT(id)')
-            ->whereColumn('finance_provider_id', 'ca1.finance_provider_id')
+            ->whereColumn('finance_provider_id', $whereColumnSecond)
             ->createdLastHour()
             ->where(static fn($query) => $query
                 ->whereIn('id', CsnAudit::selectRaw('MAX(id)')->createdLastHour()->groupBy('order_id'))
-            )
-            ->getQuery();
+            );
     }
 
     /**
-     * @return QueryBuilder
+     * @param string $whereColumnSecond
+     * @return EloquentBuilder
      */
-    public static function totalUniqueAcceptedCsns(): QueryBuilder
+    public static function totalUniqueAcceptedCsnsInLastHour(string $whereColumnSecond): EloquentBuilder
     {
         return CsnAudit::selectRaw('COUNT(id)')
-            ->whereColumn('finance_provider_id', 'ca1.finance_provider_id')
+            ->whereColumn('finance_provider_id', $whereColumnSecond)
             ->createdLastHour()
-            ->statusOptions(config('data-reporting.approved-statuses'))
-            ->getQuery();
+            ->statusOptions(config('data-reporting.approved-statuses'));
     }
 
     public function calculateAcceptedRatePercentage(int $acceptedCsns, int $uniqueCsns): int

@@ -16,18 +16,18 @@ trait QueryDateTrait
      */
     public function scopeCreatedLastHour(EloquentBuilder $query, string $fieldName = 'created_at'): EloquentBuilder
     {
-        return $query->where(function (EloquentBuilder $query) use ($fieldName) {
-            $query
-                ->where($fieldName, '>=', Carbon::now()
-                    ->subHours()
-                    ->setMinutes(0)
-                    ->setSeconds(0)
-                )
-                ->where($fieldName, '<=', Carbon::now()
-                    ->subHours()
-                    ->setMinutes(59)
-                    ->setSeconds(59)
-                );
-        });
+        return $query->where($fieldName, '>', Carbon::now()->subHours());
+    }
+
+    /**
+     * Scope a query to query today.
+     *
+     * @param EloquentBuilder $query
+     * @param string $fieldName
+     * @return EloquentBuilder
+     */
+    public function scopeCreatedToday(EloquentBuilder $query, string $fieldName = 'created_at'): EloquentBuilder
+    {
+        return $query->where($fieldName, Carbon::today());
     }
 }

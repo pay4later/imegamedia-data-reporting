@@ -1,27 +1,6 @@
 <?php
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Route prefix
-    |--------------------------------------------------------------------------
-    |
-    | The prefix set against all routes registered from this package.
-    |
-    */
-    'prefix' => 'data-reporting',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Route middleware
-    |--------------------------------------------------------------------------
-    |
-    | The middleware set against all routes registered from this package.
-    |
-    */
-    'middleware' => ['api'],
-
     /*
     |--------------------------------------------------------------------------
     | Roll-up enabled
@@ -46,6 +25,17 @@ return [
         'INACTIVE' => env('DATA_REPORTING_CLIENT_ACTIVE', 'INACTIVE'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Finance Providers
+    |--------------------------------------------------------------------------
+    |
+    | A sequential array of excluded finance provider ids
+    |
+    */
+    'excluded-finance-provider-ids' => [
+
+    ],
 
     /*
     |--------------------------------------------------------------------------

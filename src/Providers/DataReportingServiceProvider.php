@@ -4,9 +4,8 @@ namespace Imega\DataReporting\Providers;
 
 use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Imega\DataReporting\Console\LiveClients;
+use Imega\DataReporting\Console\DailyReports;
 use Imega\DataReporting\Console\HourlyReports;
 
 /**
@@ -25,14 +24,15 @@ final class DataReportingServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                LiveClients::class,
+                DailyReports::class,
                 HourlyReports::class,
             ]);
         }
 
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
         $this->registerPublishing();
         $this->setConnections();
-        $this->registerRoutes();
     }
 
     /**
@@ -57,21 +57,6 @@ final class DataReportingServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/data-reporting.php' => config_path('data-reporting.php'),
             ], 'data-reporting-config');
         }
-    }
-
-    protected function registerRoutes()
-    {
-        Route::group($this->routeConfiguration(), function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-        });
-    }
-
-    private function routeConfiguration(): array
-    {
-        return [
-            'prefix'     => config('data-reporting.prefix'),
-            'middleware' => config('data-reporting.middleware'),
-        ];
     }
 
     /**
