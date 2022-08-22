@@ -15,6 +15,8 @@ return new class extends Migration
             $table->decimal('value', 12);
             $table->timestamp('sampled_at');
             $table->timestamps();
+
+            $table->unique(['finance_provider_id', 'sampled_at']);
         });
     }
 

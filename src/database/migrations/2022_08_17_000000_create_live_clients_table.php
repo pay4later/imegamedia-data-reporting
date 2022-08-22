@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('total_active_nodemo_test');
             $table->timestamp('sampled_at');
             $table->timestamps();
+
+            $table->unique(['finance_provider_id', 'sampled_at']);
         });
     }
 

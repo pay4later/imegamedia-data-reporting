@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('total_unique_accepted_csns');
             $table->timestamp('sampled_at');
             $table->timestamps();
+
+            $table->unique(['finance_provider_id', 'sampled_at']);
         });
     }
 
