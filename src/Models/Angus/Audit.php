@@ -31,7 +31,7 @@ use Imega\DataReporting\Traits\QueryDateTrait;
  * @property int $second_chance_attempts
  * @property string|null $browser
  * @property string|null $ip
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
 final class Audit extends AngusModel
