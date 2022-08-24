@@ -5,6 +5,8 @@ namespace Imega\DataReporting\Models\Orders;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Imega\DataReporting\Enums\OrderJobType;
+use Imega\DataReporting\Enums\OrderStatus;
 
 /**
  * Imega\DataReporting\Models\Orders
@@ -42,61 +44,14 @@ final class Order extends Model
      */
     protected $connection = 'data-reporting-orders';
 
-    public const JOB_TYPE_NEW_INSTALL = 1;
-    public const JOB_TYPE_MIGRATION_UPGRADE = 2;
-    public const JOB_TYPE_OTHER_TASK = 3;
-    public const JOB_TYPE_BESPOKE_DEV = 4;
-    public const JOB_TYPE_MULTI_LENDER = 5;
-
-    public const STATUS_AWAITING_ACCOUNT_INFO = 1;
-    public const STATUS_DETAILS_RECEIVED = 2;
-    public const STATUS_SCHEDULED_AND_WAITING = 3;
-    public const STATUS_INSTALLATION_IN_PROGRESS = 4;
-    public const STATUS_DETAILS_INCOMPLETE_NOT_WORKING = 5;
-    public const STATUS_ON_HOLD_LONG_TERM = 6;
-    public const STATUS_AWAITING_TESTING_DOCUMENTATION = 7;
-    public const STATUS_AWAITING_SECOND_APPROVAL = 8;
-    public const STATUS_HOLDING_PLACE_FOR_RELEASE_TO_PRODUCTION = 9;
-    public const STATUS_FINAL_CLEARUP_TASKS = 10;
-    public const STATUS_ACTIVE = 11;
-    public const STATUS_CANCELLED = 12;
-    public const STATUS_MISC = 13;
-    public const STATUS_HOLDING_AREA_FOR_DEVELOPMENT_TASKS = 14;
-    public const STATUS_DEKO_DIRECT_INTEGRATIONS = 15;
-
-    public const SEARCHABLE_JOB_TYPES = [
-        self::JOB_TYPE_NEW_INSTALL,
-        self::JOB_TYPE_MIGRATION_UPGRADE,
-        self::JOB_TYPE_OTHER_TASK,
-        self::JOB_TYPE_BESPOKE_DEV,
-        self::JOB_TYPE_MULTI_LENDER,
-    ];
-
-    public const SEARCHABLE_STATUSES = [
-        self::STATUS_AWAITING_ACCOUNT_INFO,
-        self::STATUS_DETAILS_RECEIVED,
-        self::STATUS_SCHEDULED_AND_WAITING,
-        self::STATUS_INSTALLATION_IN_PROGRESS,
-        self::STATUS_DETAILS_INCOMPLETE_NOT_WORKING,
-        self::STATUS_ON_HOLD_LONG_TERM,
-        self::STATUS_AWAITING_TESTING_DOCUMENTATION,
-        self::STATUS_AWAITING_SECOND_APPROVAL,
-        self::STATUS_HOLDING_PLACE_FOR_RELEASE_TO_PRODUCTION,
-        self::STATUS_FINAL_CLEARUP_TASKS,
-        self::STATUS_ACTIVE,
-        self::STATUS_CANCELLED,
-        self::STATUS_HOLDING_AREA_FOR_DEVELOPMENT_TASKS,
-        self::STATUS_DEKO_DIRECT_INTEGRATIONS,
-    ];
-
     public function scopeStatusNotTest(EloquentBuilder $query): EloquentBuilder
     {
-        return $query->whereNot('statusid', self::STATUS_MISC);
+        return $query->whereNot('statusid', OrderStatus::Misc->value);
     }
 
-    public function scopeJobType(EloquentBuilder $query, string $jobType): EloquentBuilder
+    public function scopeJobType(EloquentBuilder $query, int $jobType): EloquentBuilder
     {
-        if (!in_array($jobType, Order::SEARCHABLE_JOB_TYPES)) {
+        if (!in_array($jobType, OrderJobType::cases())) {
             return $query;
         }
 

@@ -2,9 +2,9 @@
 
 namespace Imega\DataReporting\Repositories;
 
-use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
+use Imega\DataReporting\Enums\OrderJobType;
 use Imega\DataReporting\Models\Orders\Order;
 
 final class OrderRepository
@@ -15,7 +15,7 @@ final class OrderRepository
      * @param CarbonInterface $startDate       The startDate to filter on.
      * @param CarbonInterface $endDate         The endDate to filter on.
      * @param string|null     $financeProvider The financeProvider string coming from orders database.
-     * @param int|null        $jobType         The jobType int coming from orders database (Order::JOB_TYPE_).
+     * @param int|null        $jobType         The jobType int coming from orders database enum OrderJobType.
      * @return Collection
      */
     public function getOrdersByFilter
@@ -58,7 +58,7 @@ final class OrderRepository
     ): Collection
     {
         $qb = Order::query()
-            ->jobType(Order::JOB_TYPE_NEW_INSTALL)
+            ->jobType(OrderJobType::NewInstall->value)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->statusNotTest();
 

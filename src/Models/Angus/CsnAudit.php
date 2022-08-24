@@ -3,7 +3,6 @@
 namespace Imega\DataReporting\Models\Angus;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
