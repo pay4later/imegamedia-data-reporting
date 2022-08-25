@@ -80,4 +80,52 @@ final class ClientRepository
 
         return $response;
     }
+
+    public function getMerchantsAndMerchantSites
+    (
+        ?int $financeProvider = null
+    ): array
+    {
+        $response = [];
+        $clients = Client::query()
+        ->select([
+            'merchant_sites.merchant_id AS merchant_id',
+            'merchant_sites.name AS merchant_site_name',
+            'clients.merchant_site_id AS merchant_site_id',
+            'clients.id AS client_id',
+            'clients.name AS  client_name',
+            'finance_providers.name AS  finance_provider_name',
+            'ecommerce_platforms.name AS  ecommerce_platform_name'
+        ])
+        ->join('merchant_sites', 'clients.merchant_site_id', 'merchant_sites.id')
+        ->join('finance_providers', 'clients.finance_provider', 'finance_providers.id')
+        ->join('ecommerce_platforms', 'clients.ecommerce_platform_id', 'ecommerce_platforms.id')
+        ->whereNotNull('merchant_sites.merchant_id')
+        ->whereNotNull('merchant_site_id')
+        ->live()
+        ->active();
+
+        if ($financeProvider) {
+            $clients->where('finance_provider', $financeProvider);
+        }
+
+        $clients = $clients->orderBy('merchant_sites.merchant_id')->get();
+
+        foreach ($clients as $client) {
+            if (!isset($response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id])) {
+                $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id] = [
+                    'website_name' => $client->merchant_site_name
+                ];
+            }
+
+            $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id]['clients'][$client->client_id] = [
+                'client_name' => $client->client_name,
+                'finance_provider' => $client->finance_provider_name,
+                'ecommerce_platform' => $client->ecommerce_platform_name,
+            ];
+        }
+
+        return $response;
+
+    }
 }
