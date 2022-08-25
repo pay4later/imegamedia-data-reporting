@@ -41,18 +41,16 @@ final class ClientRepository
     /**
      * Fetches a list of new clients within a date range.
      *
-     * @param CarbonInterface|null $startDate
-     * @param CarbonInterface|null $endDate
+     * @param CarbonInterface $startDate
+     * @param CarbonInterface $endDate
      * @return array
      */
     public function getNewLiveGroupCounts
     (
-        ?CarbonInterface $startDate = null,
-        ?CarbonInterface $endDate = null,
+        CarbonInterface $startDate,
+        CarbonInterface $endDate,
     ): array
     {
-        $startDate ??= Carbon::now()->subMonths()->setTime(0, 0);
-        $endDate ??= Carbon::now()->setTime(23, 59, 59);
         $response = [];
 
         $clients = Client::query()
