@@ -2,7 +2,6 @@
 
 namespace Imega\DataReporting\Repositories;
 
-use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Imega\DataReporting\Models\Angus\Client;
@@ -79,9 +78,15 @@ final class ClientRepository
         return $response;
     }
 
+    /**
+     * Fetches a list of merchants with merchant sites.
+     *
+     * @param array|null $financeProviderIds
+     * @return array
+     */
     public function getMerchantsAndMerchantSites
     (
-        ?int $financeProvider = null
+        ?array $financeProviderIds = null
     ): array
     {
         $response = [];
@@ -103,8 +108,8 @@ final class ClientRepository
         ->live()
         ->active();
 
-        if ($financeProvider) {
-            $clients->where('finance_provider', $financeProvider);
+        if ($financeProviderIds) {
+            $clients->whereIn('finance_provider', $financeProviderIds);
         }
 
         $clients = $clients->orderBy('merchant_sites.merchant_id')->get();
@@ -124,6 +129,5 @@ final class ClientRepository
         }
 
         return $response;
-
     }
 }

@@ -5,7 +5,7 @@ namespace Imega\DataReporting\Models\RollUp;
 use Carbon\Carbon;
 
 /**
- * Imega\DataReporting\Models\RollUp
+ * Imega\DataReporting\Models\RollUp\TotalApplication
  *
  * @property int $finance_provider_id
  * @property int $count

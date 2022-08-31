@@ -3,11 +3,12 @@
 namespace Imega\DataReporting\Models\Angus;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
 /**
- * Imega\DataReporting\Models\Angus
+ * Imega\DataReporting\Models\Angus\CsnAudit
  *
  * @property int $id
  * @property Carbon|null $created_at
@@ -25,6 +26,11 @@ final class CsnAudit extends AngusModel
 {
     use QueryDateTrait;
 
+    public function financeProvider(): BelongsTo
+    {
+        return $this->belongsTo(FinanceProvider::class);
+    }
+
     /**
      * Scope a query to only include csns with specified statuses.
      *
@@ -34,7 +40,7 @@ final class CsnAudit extends AngusModel
      */
     public function scopeStatusOptions(EloquentBuilder $query, array $statuses): EloquentBuilder
     {
-        return $query->whereIn('csn_status', $statuses);
+        return $query->whereIn('imega_status', $statuses);
     }
 
     /**
@@ -60,7 +66,7 @@ final class CsnAudit extends AngusModel
         return CsnAudit::selectRaw('COUNT(id)')
             ->whereColumn('finance_provider_id', $whereColumnSecond)
             ->createdLastHour()
-            ->statusOptions(config('data-reporting.approved-statuses'));
+            ->statusOptions([config('data-reporting.csn-statuses.APPROVED')]);
     }
 
     public function calculateAcceptedRatePercentage(int $acceptedCsns, int $uniqueCsns): int

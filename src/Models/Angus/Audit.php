@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
 /**
- * Imega\DataReporting\Models\Angus
+ * Imega\DataReporting\Models\Angus\Audit
  *
  * @property int $id
  * @property int|null $imegaid

@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
 /**
- * Imega\DataReporting\Models\Angus
+ * Imega\DataReporting\Models\Angus\Client
  *
  * @property int $id
  * @property int|null $merchant_id
@@ -71,20 +71,6 @@ final class Client extends AngusModel
 {
     use QueryDateTrait;
 
-    /**
-     * The "booted" method of the model.
-     *
-     * @return void
-     */
-    protected static function booted(): void
-    {
-        Client::addGlobalScope('excluded-finance-providers', static function (EloquentBuilder $builder) {
-            if (!empty(config('data-reporting.excluded-finance-providers'))) {
-                $builder->whereNotIn('finance_provider', config('data-reporting.excluded-finance-providers'));
-            }
-        });
-    }
-
     public function audits(): HasMany
     {
         return $this->hasMany(Audit::class, 'imegaid');
@@ -93,6 +79,11 @@ final class Client extends AngusModel
     public function financeProvider(): BelongsTo
     {
         return $this->belongsTo(FinanceProvider::class, 'finance_provider');
+    }
+
+    public function licenceStatusChanges(): HasMany
+    {
+        return $this->hasMany(LicenceStatusChange::class);
     }
 
     /**
@@ -107,7 +98,7 @@ final class Client extends AngusModel
     }
 
     /**
-     * Scope a query to only include active users.
+     * Scope a query to only include inactive users.
      *
      * @param EloquentBuilder $query
      * @return EloquentBuilder
@@ -133,6 +124,7 @@ final class Client extends AngusModel
      * Scope a query to only include live users.
      *
      * @param EloquentBuilder $query
+     * @param string $tableAlias
      * @return EloquentBuilder
      */
     public function scopeLive(EloquentBuilder $query, string $tableAlias = 'clients'): EloquentBuilder

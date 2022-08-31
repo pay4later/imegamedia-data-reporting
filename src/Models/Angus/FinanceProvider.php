@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Imega\DataReporting\Models\Angus
+ * Imega\DataReporting\Models\Angus\FinanceProvider
  *
  * @property int $id
  * @property string $name
@@ -46,5 +46,15 @@ final class FinanceProvider extends AngusModel
     public function clients(): HasMany
     {
         return $this->hasMany(Client::class, 'finance_provider');
+    }
+
+    public function csnAudits(): HasMany
+    {
+        return $this->hasMany(CsnAudit::class);
+    }
+
+    public function licenceStatusChanges(): HasMany
+    {
+        return $this->hasMany(LicenceStatusChange::class);
     }
 }

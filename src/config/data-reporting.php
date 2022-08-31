@@ -21,40 +21,24 @@ return [
     |
     */
     'client-statuses' => [
-        'ACTIVE'   => env('DATA_REPORTING_CLIENT_ACTIVE', 'ACTIVE'),
-        'INACTIVE' => env('DATA_REPORTING_CLIENT_ACTIVE', 'INACTIVE'),
+        'ACTIVE'                        => env('DATA_REPORTING_CLIENT_ACTIVE', 'ACTIVE'),
+        'INACTIVE'                      => env('DATA_REPORTING_CLIENT_INACTIVE', 'INACTIVE'),
+        'LICENCE_STATUS_QUOTA_EXCEEDED' => env('DATA_REPORTING_CLIENT_QUOTA_EXCEEDED', 'LICENCE_STATUS_QUOTA_EXCEEDED'),
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Excluded Finance Providers
+    | Csn statuses
     |--------------------------------------------------------------------------
     |
-    | A sequential array of excluded finance provider ids
+    | A list of translated statuses
     |
     */
-    'excluded-finance-provider-ids' => [
-
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Approved statuses
-    |--------------------------------------------------------------------------
-    |
-    | A list of approved statuses
-    |
-    */
-    'approved-statuses' => [
-        'converted',
-        'VERIFIED',
-        'READY',
-        'COMPLETE',
-        '5',
-        'signed',
-        'ACCEPTED',
-        'Live',
-        'Order Release Verified'
+    'csn-statuses'    => [
+        'APPROVED'  => 'approved',
+        'COMPLETED' => 'completed',
+        'DECLINED'  => 'declined',
+        'REFERRED'  => 'referred',
     ],
 
     /*
