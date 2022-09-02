@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::connection('data-reporting-roll-up')->create('acceptance_rates', static function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->unsignedInteger('finance_provider_id');
+            $table->unsignedInteger('client_id');
             $table->integer('acceptance_rate');
             $table->integer('total_unique_csns');
             $table->integer('total_unique_accepted_csns');

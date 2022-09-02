@@ -7,6 +7,7 @@ use Carbon\Carbon;
 /**
  * Imega\DataReporting\Models\RollUp\AcceptanceRate
  *
+ * @property int $client_id
  * @property int $finance_provider_id
  * @property int $acceptance_rate
  * @property int $total_unique_csns
@@ -24,6 +25,7 @@ final class AcceptanceRate extends RollUpModel
      */
     protected $fillable = [
         'sampled_at',
+        'client_id',
         'finance_provider_id',
         'acceptance_rate',
         'total_unique_csns',

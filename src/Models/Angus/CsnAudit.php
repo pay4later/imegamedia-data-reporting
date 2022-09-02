@@ -43,32 +43,6 @@ final class CsnAudit extends AngusModel
         return $query->whereIn('imega_status', $statuses);
     }
 
-    /**
-     * @param string $whereColumnSecond
-     * @return EloquentBuilder
-     */
-    public static function totalUniqueCsnsInLastHour(string $whereColumnSecond): EloquentBuilder
-    {
-        return CsnAudit::selectRaw('COUNT(id)')
-            ->whereColumn('finance_provider_id', $whereColumnSecond)
-            ->createdLastHour()
-            ->where(static fn($query) => $query
-                ->whereIn('id', CsnAudit::selectRaw('MAX(id)')->createdLastHour()->groupBy('order_id'))
-            );
-    }
-
-    /**
-     * @param string $whereColumnSecond
-     * @return EloquentBuilder
-     */
-    public static function totalUniqueAcceptedCsnsInLastHour(string $whereColumnSecond): EloquentBuilder
-    {
-        return CsnAudit::selectRaw('COUNT(id)')
-            ->whereColumn('finance_provider_id', $whereColumnSecond)
-            ->createdLastHour()
-            ->statusOptions([config('data-reporting.csn-statuses.APPROVED')]);
-    }
-
     public function calculateAcceptedRatePercentage(int $acceptedCsns, int $uniqueCsns): int
     {
         if ($acceptedCsns !== 0 && $uniqueCsns !== 0) {
