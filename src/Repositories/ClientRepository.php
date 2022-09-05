@@ -86,7 +86,10 @@ final class ClientRepository
      */
     public function getMerchantsAndMerchantSites
     (
-        ?array $financeProviderIds = null
+        ?array $financeProviderIds = null,
+        ?int $ecommercePlatform = null,
+        ?int $testMode = null,
+        ?string $licenceStatus = null
     ): array
     {
         $response = [];
@@ -97,6 +100,8 @@ final class ClientRepository
             'clients.merchant_site_id AS merchant_site_id',
             'clients.id AS client_id',
             'clients.name AS  client_name',
+            'clients.test_mode AS  client_test_mode',
+            'clients.licence_status AS  client_licence_status',
             'finance_providers.name AS  finance_provider_name',
             'ecommerce_platforms.name AS  ecommerce_platform_name'
         ])
@@ -105,11 +110,23 @@ final class ClientRepository
         ->join('ecommerce_platforms', 'clients.ecommerce_platform_id', 'ecommerce_platforms.id')
         ->whereNotNull('merchant_sites.merchant_id')
         ->whereNotNull('merchant_site_id')
-        ->live()
-        ->active();
+        ->live();
+
 
         if ($financeProviderIds) {
             $clients->whereIn('finance_provider', $financeProviderIds);
+        }
+
+        if ($ecommercePlatform) {
+            $clients->where('clients.ecommerce_platform_id', $ecommercePlatform);
+        }
+
+        if (!is_null($testMode)) {
+            $clients->where('clients.test_mode', $testMode);
+        }
+
+        if ($licenceStatus) {
+            $clients->where('clients.licence_status', $licenceStatus);
         }
 
         $clients = $clients->orderBy('merchant_sites.merchant_id')->get();
@@ -125,6 +142,8 @@ final class ClientRepository
                 'client_name' => $client->client_name,
                 'finance_provider' => $client->finance_provider_name,
                 'ecommerce_platform' => $client->ecommerce_platform_name,
+                'test_mode' => $client->client_test_mode,
+                'licence_status' => $client->client_licence_status,
             ];
         }
 
