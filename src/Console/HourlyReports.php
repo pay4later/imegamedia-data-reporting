@@ -62,7 +62,7 @@ final class HourlyReports extends Command
     {
         AcceptanceRate::upsert(
             $this->csnAuditRepo->getLastHourAcceptanceRates()->toArray(),
-            ['finance_provider_id', 'sampled_at'],
+            ['finance_provider_id', 'client_id', 'sampled_at'],
         );
     }
 }
