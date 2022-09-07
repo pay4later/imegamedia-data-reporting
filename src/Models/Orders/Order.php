@@ -46,7 +46,7 @@ final class Order extends Model
 
     public function scopeStatusNotTest(EloquentBuilder $query): EloquentBuilder
     {
-        return $query->whereNot('statusid', OrderStatus::Misc->value);
+        return $query->whereNot('statusid', '<>', OrderStatus::Misc->value);
     }
 
     public function scopeJobType(EloquentBuilder $query, int $jobType): EloquentBuilder

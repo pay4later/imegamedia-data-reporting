@@ -35,6 +35,6 @@ final class LicenceStatusChange extends AngusModel
 
     public function scopeReasonNotImegaMigration(EloquentBuilder $query): EloquentBuilder
     {
-        return $query->whereNot('reason', self::REASON_IMEGA_MIGRATION);
+        return $query->where('reason', '<>', self::REASON_IMEGA_MIGRATION);
     }
 }
