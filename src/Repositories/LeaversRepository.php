@@ -11,16 +11,16 @@ final class LeaversRepository
     /**
      * Get a list of non-test mode leavers by date filter.
      *
-     * @param CarbonInterface $startDate          The startDate to filter on.
-     * @param CarbonInterface $endDate            The endDate to filter on.
-     * @param array|null      $financeProviderIds A list of financeProviderIds to filter on.
+     * @param CarbonInterface $startDate The startDate to filter on.
+     * @param CarbonInterface $endDate The endDate to filter on.
+     * @param array|null $financeProviderIds A list of financeProviderIds to filter on.
      * @return Collection
      */
     public function getLeaversByFilter
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
-        ?array $financeProviderIds = null
+        ?array          $financeProviderIds = null
     ): Collection
     {
         $qb = LicenceStatusChange::query()

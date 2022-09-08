@@ -4,7 +4,6 @@ namespace Imega\DataReporting\Tests;
 
 use Imega\DataReporting\Providers\DataReportingServiceProvider;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Testing\WithFaker;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 /**
@@ -14,8 +13,6 @@ use Orchestra\Testbench\TestCase as OrchestraTestCase;
  */
 class TestCase extends OrchestraTestCase
 {
-    use WithFaker;
-
     /**
      * Set up any config values we need
      *

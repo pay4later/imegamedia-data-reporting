@@ -12,18 +12,18 @@ final class OrderRepository
     /**
      * Get a list of non-test orders by date filter.
      *
-     * @param CarbonInterface $startDate       The startDate to filter on.
-     * @param CarbonInterface $endDate         The endDate to filter on.
-     * @param string|null     $financeProvider The financeProvider string coming from orders database.
-     * @param int|null        $jobType         The jobType int coming from orders database enum OrderJobType.
+     * @param CarbonInterface $startDate The startDate to filter on.
+     * @param CarbonInterface $endDate The endDate to filter on.
+     * @param string|null $financeProvider The financeProvider string coming from orders database.
+     * @param int|null $jobType The jobType int coming from orders database enum OrderJobType.
      * @return Collection
      */
     public function getOrdersByFilter
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
-        ?string $financeProvider = null,
-        ?int $jobType = null
+        ?string         $financeProvider = null,
+        ?int            $jobType = null
     ): Collection
     {
         $qb = Order::query()
@@ -45,16 +45,16 @@ final class OrderRepository
     /**
      * Get a list of new orders by date filter.
      *
-     * @param CarbonInterface $startDate       The startDate to filter on.
-     * @param CarbonInterface $endDate         The endDate to filter on.
-     * @param string|null     $financeProvider The financeProvider string coming from orders database.
+     * @param CarbonInterface $startDate The startDate to filter on.
+     * @param CarbonInterface $endDate The endDate to filter on.
+     * @param string|null $financeProvider The financeProvider string coming from orders database.
      * @return Collection
      */
     public function getNewOrdersCount
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
-        ?string $financeProvider = null,
+        ?string         $financeProvider = null,
     ): Collection
     {
         $qb = Order::query()

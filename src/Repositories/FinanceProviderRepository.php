@@ -26,4 +26,17 @@ final class FinanceProviderRepository
             ])
             ->get();
     }
+
+    /**
+     * Returns the id of the finance provider filtered by alias
+     *
+     * @param string $alias
+     * @return int
+     */
+    public function getFinanceProviderIdByAlias(string $alias): int
+    {
+        return FinanceProvider::query()
+            ->where('alias', $alias)
+            ->value('id');
+    }
 }

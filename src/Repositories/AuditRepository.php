@@ -17,7 +17,7 @@ final class AuditRepository
     {
         return Audit::query()
             ->select('retailer as finance_provider_id')
-            ->whereHas('clients', fn (Builder $query) => $query->testMode(false))
+            ->whereHas('clients', fn(Builder $query) => $query->testMode(false))
             ->selectRaw("DATE_FORMAT(NOW(),'%Y-%m-%d %H:00:00') as sampled_at")
             ->selectRaw('COUNT(*) as total_applications')
             ->selectRaw('SUM(orderamount) as total_application_value')

@@ -66,7 +66,7 @@ final class ClientRepository
         foreach ($clients as $client) {
             if (!isset($response[$client->finance_provider_name])) {
                 $response[$client->finance_provider_name] = [
-                    'alias' => $client->finance_provider_alias,
+                    'alias'   => $client->finance_provider_alias,
                     'clients' => [],
                 ];
             }
@@ -82,35 +82,38 @@ final class ClientRepository
      * Fetches a list of merchants with merchant sites.
      *
      * @param array|null $financeProviderIds
+     * @param int|null $ecommercePlatform
+     * @param int|null $testMode
+     * @param string|null $licenceStatus
      * @return array
      */
     public function getMerchantsAndMerchantSites
     (
-        ?array $financeProviderIds = null,
-        ?int $ecommercePlatform = null,
-        ?int $testMode = null,
+        ?array  $financeProviderIds = null,
+        ?int    $ecommercePlatform = null,
+        ?int    $testMode = null,
         ?string $licenceStatus = null
     ): array
     {
         $response = [];
         $clients = Client::query()
-        ->select([
-            'merchant_sites.merchant_id AS merchant_id',
-            'merchant_sites.name AS merchant_site_name',
-            'clients.merchant_site_id AS merchant_site_id',
-            'clients.id AS client_id',
-            'clients.name AS  client_name',
-            'clients.test_mode AS  client_test_mode',
-            'clients.licence_status AS  client_licence_status',
-            'finance_providers.name AS  finance_provider_name',
-            'ecommerce_platforms.name AS  ecommerce_platform_name'
-        ])
-        ->join('merchant_sites', 'clients.merchant_site_id', 'merchant_sites.id')
-        ->join('finance_providers', 'clients.finance_provider', 'finance_providers.id')
-        ->join('ecommerce_platforms', 'clients.ecommerce_platform_id', 'ecommerce_platforms.id')
-        ->whereNotNull('merchant_sites.merchant_id')
-        ->whereNotNull('merchant_site_id')
-        ->live();
+            ->select([
+                'merchant_sites.merchant_id AS merchant_id',
+                'merchant_sites.name AS merchant_site_name',
+                'clients.merchant_site_id AS merchant_site_id',
+                'clients.id AS client_id',
+                'clients.name AS  client_name',
+                'clients.test_mode AS  client_test_mode',
+                'clients.licence_status AS  client_licence_status',
+                'finance_providers.name AS  finance_provider_name',
+                'ecommerce_platforms.name AS  ecommerce_platform_name',
+            ])
+            ->join('merchant_sites', 'clients.merchant_site_id', 'merchant_sites.id')
+            ->join('finance_providers', 'clients.finance_provider', 'finance_providers.id')
+            ->join('ecommerce_platforms', 'clients.ecommerce_platform_id', 'ecommerce_platforms.id')
+            ->whereNotNull('merchant_sites.merchant_id')
+            ->whereNotNull('merchant_site_id')
+            ->live();
 
 
         if ($financeProviderIds) {
@@ -134,16 +137,16 @@ final class ClientRepository
         foreach ($clients as $client) {
             if (!isset($response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id])) {
                 $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id] = [
-                    'website_name' => $client->merchant_site_name
+                    'website_name' => $client->merchant_site_name,
                 ];
             }
 
             $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id]['clients'][$client->client_id] = [
-                'client_name' => $client->client_name,
-                'finance_provider' => $client->finance_provider_name,
+                'client_name'        => $client->client_name,
+                'finance_provider'   => $client->finance_provider_name,
                 'ecommerce_platform' => $client->ecommerce_platform_name,
-                'test_mode' => $client->client_test_mode,
-                'licence_status' => $client->client_licence_status,
+                'test_mode'          => $client->client_test_mode,
+                'licence_status'     => $client->client_licence_status,
             ];
         }
 
