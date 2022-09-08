@@ -28,7 +28,7 @@ final class OrderRepository
     {
         $qb = Order::query()
             ->select(['orderid', 'invoiceid', 'company', 'finance', 'package', 'email', 'created', 'statusid'])
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereBetween('created', [$startDate, $endDate])
             ->statusNotTest();
 
         if ($jobType) {
@@ -59,7 +59,7 @@ final class OrderRepository
     {
         $qb = Order::query()
             ->jobType(OrderJobType::NewInstall->value)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereBetween('created', [$startDate, $endDate])
             ->statusNotTest();
 
         if ($financeProvider) {
