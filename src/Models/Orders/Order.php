@@ -51,7 +51,7 @@ final class Order extends Model
 
     public function scopeJobType(EloquentBuilder $query, int $jobType): EloquentBuilder
     {
-        if (!in_array($jobType, OrderJobType::cases())) {
+        if (!OrderJobType::tryFrom($jobType)) {
             return $query;
         }
 
