@@ -60,6 +60,6 @@ final class Order extends Model
 
     public function scopeFinanceProvider(EloquentBuilder $query, string $financeProvider): EloquentBuilder
     {
-        return $query->where('finance', 'LIKE', Str::of($financeProvider)->wrap('%'));
+        return $query->where('finance', 'LIKE', '%' . $financeProvider . '%');
     }
 }
