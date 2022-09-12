@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Collection;
 use Imega\DataReporting\Models\Angus\Audit;
-use Imega\DataReporting\Models\Angus\Client;
 use Imega\DataReporting\Models\Angus\FinanceProvider;
 use Imega\DataReporting\Repositories\AuditRepository;
 use Imega\DataReporting\Tests\TestCase;
@@ -65,8 +64,6 @@ final class AuditRepositoryTest extends TestCase
                 'orderamount' => 5,
             ]))
             ->create();
-
-
 
         $result = $this->auditRepository->getLastHourApplicationCounts();
         $this->assertTrue($result->containsOneItem());
