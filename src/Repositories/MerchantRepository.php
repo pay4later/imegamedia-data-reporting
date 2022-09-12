@@ -5,11 +5,9 @@ namespace Imega\DataReporting\Repositories;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Imega\DataReporting\Enums\OrderJobType;
 use Imega\DataReporting\Models\Angus\FinanceProvider;
 use Imega\DataReporting\Models\Angus\Merchant;
 use Imega\DataReporting\Models\Angus\MerchantSite;
-use Imega\DataReporting\Models\Orders\Order;
 
 final class MerchantRepository
 {

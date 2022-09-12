@@ -4,7 +4,6 @@ namespace Imega\DataReporting\Models\Orders;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Imega\DataReporting\Enums\OrderJobType;
 use Imega\DataReporting\Enums\OrderStatus;
 

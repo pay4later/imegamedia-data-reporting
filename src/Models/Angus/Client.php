@@ -2,7 +2,10 @@
 
 namespace Imega\DataReporting\Models\Angus;
 
+use Database\Factories\Angus\ClientFactory;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -69,7 +72,27 @@ use Imega\DataReporting\Traits\QueryDateTrait;
  */
 final class Client extends AngusModel
 {
+    use HasFactory;
     use QueryDateTrait;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'test_mode' => 'bool',
+    ];
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory(): Factory
+    {
+        return ClientFactory::new();
+    }
 
     public function audits(): HasMany
     {
@@ -112,7 +135,7 @@ final class Client extends AngusModel
      * Scope a query to only include users of a given test_mode.
      *
      * @param EloquentBuilder $query
-     * @param  bool  $type
+     * @param bool $type
      * @return EloquentBuilder
      */
     public function scopeTestMode(EloquentBuilder $query, bool $type): EloquentBuilder

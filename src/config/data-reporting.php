@@ -71,7 +71,7 @@ return [
             |
             */
             'angus'  => [
-                'driver'         => 'mysql',
+                'driver'         => env('DATA_REPORTING_SOURCE_ANGUS_DB_CONNECTION', 'mysql'),
                 'url'            => env('DATA_REPORTING_SOURCE_ANGUS_DATABASE_URL', env('DATABASE_URL')),
                 'host'           => env('DATA_REPORTING_SOURCE_ANGUS_DB_HOST', env('DB_HOST')),
                 'port'           => env('DATA_REPORTING_SOURCE_ANGUS_DB_PORT', env('DB_PORT')),
@@ -98,7 +98,7 @@ return [
             |
             */
             'orders' => [
-                'driver'      => 'mysql',
+                'driver'      => env('DATA_REPORTING_SOURCE_ORDERS_DB_CONNECTION', 'mysql'),
                 'url'         => env('DATA_REPORTING_SOURCE_ORDERS_DATABASE_URL', env('ORDERS_DATABASE_URL')),
                 'host'        => env('DATA_REPORTING_SOURCE_ORDERS_DB_HOST', env('ORDERS_DB_HOST')),
                 'port'        => env('DATA_REPORTING_SOURCE_ORDERS_DB_PORT', env('ORDERS_DB_PORT')),
@@ -126,7 +126,7 @@ return [
         |
         */
         'roll-up' => [
-            'driver'         => 'mysql',
+            'driver'         => env('DATA_REPORTING_ROLLUP_DB_CONNECTION', 'mysql'),
             'url'            => env('DATA_REPORTING_ROLLUP_DATABASE_URL', env('DATABASE_URL')),
             'host'           => env('DATA_REPORTING_ROLLUP_DB_HOST', env('DB_HOST')),
             'port'           => env('DATA_REPORTING_ROLLUP_DB_PORT', env('DB_PORT')),
@@ -144,5 +144,4 @@ return [
             ]) : [],
         ],
     ],
-
 ];

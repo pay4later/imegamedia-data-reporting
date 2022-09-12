@@ -3,6 +3,9 @@
 namespace Imega\DataReporting\Models\Angus;
 
 use Carbon\Carbon;
+use Database\Factories\Angus\AuditFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Imega\DataReporting\Traits\QueryDateTrait;
 
@@ -35,10 +38,35 @@ use Imega\DataReporting\Traits\QueryDateTrait;
  */
 final class Audit extends AngusModel
 {
+    use HasFactory;
     use QueryDateTrait;
 
-    public function clients(): BelongsTo
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'retailer' => 'int',
+    ];
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory(): Factory
+    {
+        return AuditFactory::new();
+    }
+
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'imegaid');
+    }
+
+    public function financeProvider(): BelongsTo
+    {
+        return $this->belongsTo(FinanceProvider::class, 'retailer');
     }
 }
