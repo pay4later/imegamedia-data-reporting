@@ -3,6 +3,7 @@
 namespace Imega\DataReporting\Repositories;
 
 use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Imega\DataReporting\Models\Angus\Client;
 
@@ -18,7 +19,7 @@ final class ClientRepository
         $qb = Client::query()
             ->from('clients', $tableAlias = 'c1')
             ->select($tableAlias . '.finance_provider AS finance_provider_id')
-            ->selectRaw("DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') AS sampled_at")
+            ->selectRaw('"' . Carbon::now()->format('Y-m-d 00:00:00') . '" AS sampled_at')
             ->selectRaw('COUNT(' . $tableAlias . '.id) AS total_active')
             ->active($tableAlias)
             ->whereNull($tableAlias . '.deleted_at')

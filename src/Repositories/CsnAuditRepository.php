@@ -2,6 +2,7 @@
 
 namespace Imega\DataReporting\Repositories;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Imega\DataReporting\Models\Angus\CsnAudit;
 
@@ -17,7 +18,7 @@ final class CsnAuditRepository
         $qb = CsnAudit::query()
             ->from('csn_audits', $tableAlias = 'ca1')
             ->select([$tableAlias . '.finance_provider_id', $tableAlias . '.client_id'])
-            ->selectRaw("DATE_FORMAT(NOW(),'%Y-%m-%d %H:00:00') as sampled_at")
+            ->selectRaw('"' . Carbon::now()->format('Y-m-d H:00:00') . '" AS sampled_at')
             ->selectRaw('0 AS acceptance_rate')
             ->groupBy([$tableAlias . '.finance_provider_id', $tableAlias . '.client_id']);
 
