@@ -2,6 +2,7 @@
 
 namespace Imega\DataReporting\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +34,15 @@ final class DataReportingServiceProvider extends ServiceProvider
 
         $this->registerPublishing();
         $this->setConnections();
+
+        $this->app->booted(function () {
+            if (config('data-reporting.roll-up-enabled')) {
+                /** @var Schedule $schedule */
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command(DailyReports::class)->daily();
+                $schedule->command(HourlyReports::class)->hourly();
+            }
+        });
     }
 
     /**
