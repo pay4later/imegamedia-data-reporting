@@ -15,7 +15,6 @@ definitions:
           - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
           - composer install --optimize-autoloader --no-interaction --prefer-dist
           - ln -f -s .env.pipelines .env
-          - touch database/database.sqlite
           - ./vendor/bin/phpunit
         caches:
           - composer
