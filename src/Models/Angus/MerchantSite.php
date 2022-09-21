@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
  * @property string $api_key
  * @property string $api_secret
  * @property string $encryption_key
+ * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection|Client[] $financeIntegrations

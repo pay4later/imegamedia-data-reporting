@@ -47,18 +47,20 @@ final class MerchantRepository
      *
      * @param CarbonInterface $startDate
      * @param CarbonInterface $endDate
+     * @param array|null $merchantSiteStatuses
      * @return Collection
      */
     public function getUniqueMerchantHierarchyCounts
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
+        ?array $merchantSiteStatuses = null
     ): Collection
     {
         $dekoProvider = (new FinanceProviderRepository)->getFinanceProviderIdByAlias(FinanceProvider::ALIAS_DEKO);
 
         $qb = MerchantSite::query()
-            ->select(['merchants.id as merchant_id', 'merchants.name as merchant_name'])
+            ->select(['merchants.id as merchant_id', 'merchants.name as merchant_name', 'merchant_sites.status'])
             ->selectRaw('COUNT(DISTINCT merchant_sites.id) as merchant_site_count')
             ->selectRaw('CAST(SUM(CASE WHEN clients.finance_provider = ? THEN 1 ELSE 0 END) as UNSIGNED) as deko_integrations', [$dekoProvider])
             ->selectRaw('CAST(SUM(CASE WHEN clients.finance_provider = ? THEN 0 ELSE 1 END) as UNSIGNED) as non_deko_integrations', [$dekoProvider])
@@ -67,6 +69,10 @@ final class MerchantRepository
             ->join('clients', 'merchant_sites.id', '=', 'clients.merchant_site_id')
             ->whereBetween('merchants.created_at', [$startDate, $endDate])
             ->groupBy('merchants.id');
+
+        if ($merchantSiteStatuses) {
+            $qb->whereIn('merchant_sites.status', $merchantSiteStatuses);
+        }
 
         return $qb->get();
     }
