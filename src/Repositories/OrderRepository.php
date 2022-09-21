@@ -48,14 +48,14 @@ final class OrderRepository
      * @param CarbonInterface $startDate The startDate to filter on.
      * @param CarbonInterface $endDate The endDate to filter on.
      * @param string|null $financeProvider The financeProvider string coming from orders database.
-     * @return Collection
+     * @return int
      */
     public function getNewOrdersCount
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
         ?string         $financeProvider = null,
-    ): Collection
+    ): int
     {
         $qb = Order::query()
             ->jobType(OrderJobType::NewInstall->value)
