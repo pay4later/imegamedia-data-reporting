@@ -73,6 +73,7 @@ final class ClientRepository
             }
 
             $response[$client->finance_provider_name]['clients'][] = $client->client_name;
+            $response[$client->finance_provider_name]['count'] = count($response[$client->finance_provider_name]['clients']);
         }
         $response['count'] = count($clients);
 
