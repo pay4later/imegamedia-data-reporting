@@ -51,7 +51,7 @@ final class ClientRepository
         CarbonInterface $endDate,
     ): array
     {
-        $response = [];
+        $lenders = [];
 
         $clients = Client::query()
             ->select([
@@ -65,19 +65,18 @@ final class ClientRepository
             ->get();
 
         foreach ($clients as $client) {
-            if (!isset($response[$client->finance_provider_name])) {
-                $response[$client->finance_provider_name] = [
+            if (!isset($lenders[$client->finance_provider_name])) {
+                $lenders[$client->finance_provider_name] = [
                     'alias'   => $client->finance_provider_alias,
                     'clients' => [],
                 ];
             }
 
-            $response[$client->finance_provider_name]['clients'][] = $client->client_name;
-            $response[$client->finance_provider_name]['count'] = count($response[$client->finance_provider_name]['clients']);
+            $lenders[$client->finance_provider_name]['clients'][] = $client->client_name;
+            $lenders[$client->finance_provider_name]['count'] = count($lenders[$client->finance_provider_name]['clients']);
         }
-        $response['count'] = count($clients);
 
-        return $response;
+        return ['lenders' => $lenders, 'count' => count($clients)];
     }
 
     /**
