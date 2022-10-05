@@ -10,7 +10,7 @@ use Imega\DataReporting\Models\Angus\Client;
 final class ClientRepository
 {
     /**
-     * Fetches a list of live client counts from the Angus system
+     * Fetches a list of live client counts from the Angus system, used for daily report
      *
      * @return Collection
      */
@@ -36,6 +36,28 @@ final class ClientRepository
             ->selectSub(Client::totalActiveNoDemoTest($whereSecondColumn), 'total_active_nodemo_test');
 
         return $qb->get();
+    }
+
+    /**
+     * Fetches a list of live clients by provider
+     *
+     * @return Collection
+     */
+    public function getClientsByProviderCount(): Collection
+    {
+        return Client::query()
+        ->select([
+            'finance_providers.id AS finance_provider_id',
+            'finance_providers.name AS finance_provider_name',
+            'finance_providers.alias AS finance_provider_alias',
+        ])
+        ->join('finance_providers', 'clients.finance_provider', 'finance_providers.id')
+        ->selectRaw('COUNT(clients.id) as client_count')
+        ->active()
+        ->live()
+        ->whereNull('deleted_at')
+        ->groupBy('finance_provider')
+        ->get();
     }
 
     /**
