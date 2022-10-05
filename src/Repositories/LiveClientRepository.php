@@ -2,6 +2,7 @@
 
 namespace Imega\DataReporting\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Carbon\CarbonInterface;
 use Imega\DataReporting\Models\RollUp\LiveClient;
@@ -9,18 +10,66 @@ use Imega\DataReporting\Models\RollUp\LiveClient;
 final class LiveClientRepository
 {
     /**
-     * Get a list of live clients counts by date filter.
+     * Get a list of all active clients counts by date filter.
      *
      * @param CarbonInterface $date
      * @return Collection
      */
-    public function getLiveClientsByDate(
+    public function getActiveClientsByDate
+    (
         CarbonInterface $date,
     ): Collection
     {
+        return $this->liveClientQueryBuilder($date)->addSelect('total_active')->get();
+    }
+
+    /**
+     * Get a list of active live clients counts by date filter.
+     *
+     * @param CarbonInterface $date
+     * @return Collection
+     */
+    public function getActiveLiveClientsByDate
+    (
+        CarbonInterface $date,
+    ): Collection
+    {
+        return $this->liveClientQueryBuilder($date)->addSelect('total_active_live')->get();
+    }
+
+    /**
+     * Get a list of active test clients counts by date filter.
+     *
+     * @param CarbonInterface $date
+     * @return Collection
+     */
+    public function getActiveTestClientsByDate
+    (
+        string $date,
+    ): Collection
+    {
+        return $this->liveClientQueryBuilder($date)->addSelect('total_active_test')->get();
+    }
+
+    /**
+     * Get a list of active test clients counts by date filter.
+     *
+     * @param CarbonInterface $date
+     * @return Builder
+     */
+    private function liveClientQueryBuilder
+    (
+        string $date,
+    ): Builder
+    {
         return LiveClient::query()
-            ->select(['finance_provider_id', 'total_active', 'total_billable', 'total_inactive', 'total_active_live', 'total_active_nodemo_live', 'total_active_nodemo_test', 'sampled_at'])
+            ->select([
+            'finance_provider_id',
+            'sampled_at',
+            'finance_providers.alias AS finance_provider_alias'
+            ])
+            ->join('finance_providers', 'finance_provider_id', 'finance_providers.id')
             ->where('sampled_at', $date)
-            ->orderBy('sampled_at','DESC')->get();
+            ->orderBy('finance_provider_id','DESC');
     }
 }
