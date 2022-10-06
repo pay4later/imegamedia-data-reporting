@@ -45,7 +45,7 @@ final class LiveClientRepository
      */
     public function getActiveTestClientsByDate
     (
-        string $date,
+        CarbonInterface $date,
     ): Collection
     {
         return $this->liveClientQueryBuilder($date)->addSelect('total_active_test')->get();
@@ -59,7 +59,7 @@ final class LiveClientRepository
      */
     private function liveClientQueryBuilder
     (
-        string $date,
+        CarbonInterface $date,
     ): Builder
     {
         return LiveClient::query()
