@@ -18,8 +18,8 @@ final class AcceptanceRateRepository
      */
     public function getAcceptanceRateByDate
     (
-        string $startDate,
-        string $endDate,
+        CarbonInterface $startDate,
+        CarbonInterface $endDate,
         ?int $clientId = null,
     ): Collection
     {
