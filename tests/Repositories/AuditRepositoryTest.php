@@ -70,8 +70,8 @@ final class AuditRepositoryTest extends TestCase
         $this->assertEquals($result->first()->toArray(), [
             'finance_provider_id' => $providers->get(0)->id,
             'sampled_at' => Carbon::now()->format('Y-m-d H:00:00'),
-            'total_applications' => $count,
-            'total_application_value' => $orderAmount * $count,
+            'count' => $count,
+            'value' => $orderAmount * $count,
         ]);
     }
 }
