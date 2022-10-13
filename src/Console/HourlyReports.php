@@ -54,7 +54,7 @@ final class HourlyReports extends Command
     {
         TotalApplication::upsert(
             $this->auditRepo->getLastHourApplicationCounts()->toArray(),
-            ['finance_provider_id', 'sampled_at'],
+            ['finance_provider_id', 'client_id', 'sampled_at'],
         );
     }
 

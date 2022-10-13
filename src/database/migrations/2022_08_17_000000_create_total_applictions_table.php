@@ -11,12 +11,13 @@ return new class extends Migration
         Schema::connection('data-reporting-roll-up')->create('total_applications', static function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->unsignedInteger('finance_provider_id');
+            $table->unsignedInteger('client_id');
             $table->integer('count');
             $table->decimal('value', 12);
             $table->timestamp('sampled_at');
             $table->timestamps();
 
-            $table->unique(['finance_provider_id', 'sampled_at']);
+            $table->unique(['finance_provider_id', 'client_id', 'sampled_at']);
         });
     }
 
