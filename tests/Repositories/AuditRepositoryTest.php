@@ -69,6 +69,7 @@ final class AuditRepositoryTest extends TestCase
         $this->assertTrue($result->containsOneItem());
         $this->assertEquals($result->first()->toArray(), [
             'finance_provider_id' => $providers->get(0)->id,
+            'client_id' => 1,
             'sampled_at' => Carbon::now()->format('Y-m-d H:00:00'),
             'count' => $count,
             'value' => $orderAmount * $count,
