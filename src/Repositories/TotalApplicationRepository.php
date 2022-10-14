@@ -20,7 +20,7 @@ final class TotalApplicationRepository
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
-        ?int $clientId,
+        ?int $clientId = null,
     ): Collection
     {
         $qb =  TotalApplication::query()
