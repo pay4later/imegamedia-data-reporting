@@ -13,12 +13,14 @@ final class TotalApplicationRepository
      *
      * @param CarbonInterface $startDate
      * @param CarbonInterface $endDate
+     * @param int|null $clientId
      * @return Collection
      */
     public function getApplicationCountQuery
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
+        ?int $clientId,
     ): Collection
     {
         $qb =  TotalApplication::query()
@@ -30,6 +32,10 @@ final class TotalApplicationRepository
             ->selectRaw('SUM(count) as application_count')
             ->whereBetween('sampled_at', [$startDate, $endDate])
             ->groupBy('finance_provider_id', 'finance_providers.alias');
+
+        if ($clientId) {
+            $qb->whereIn('client_id', $clientId);
+        }
 
         return $qb->get();
     }
