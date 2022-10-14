@@ -34,7 +34,7 @@ final class TotalApplicationRepository
             ->groupBy('finance_provider_id', 'finance_providers.alias');
 
         if ($clientId) {
-            $qb->whereIn('client_id', $clientId);
+            $qb->where('client_id', $clientId);
         }
 
         return $qb->get();
