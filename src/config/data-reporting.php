@@ -135,7 +135,7 @@ return [
             'password'       => env('DATA_REPORTING_ROLLUP_DB_PASSWORD', env('DB_PASSWORD')),
             'charset'        => 'utf8mb4',
             'collation'      => 'utf8mb4_unicode_ci',
-            'prefix'         => '',
+            'prefix'         => env('DATA_REPORTING_ROLLUP_DB_PREFIX', ''),
             'prefix_indexes' => true,
             'strict'         => true,
             'engine'         => null,
