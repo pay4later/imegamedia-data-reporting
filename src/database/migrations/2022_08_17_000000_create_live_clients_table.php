@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('sampled_at');
             $table->timestamps();
 
-            $table->unique(['finance_provider_id', 'sampled_at']);
+            $table->unique(['finance_provider_id', 'sampled_at'], 'live_clients_finance_provider_id_sampled_at_unique');
         });
     }
 
