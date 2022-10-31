@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Imega\DataReporting\Console\DailyReports;
+use Imega\DataReporting\Console\HistoricRecords;
 use Imega\DataReporting\Console\HourlyReports;
 
 /**
@@ -27,6 +28,7 @@ final class DataReportingServiceProvider extends ServiceProvider
             $this->commands([
                 DailyReports::class,
                 HourlyReports::class,
+                HistoricRecords::class,
             ]);
         }
 
