@@ -3,6 +3,8 @@
 namespace Imega\DataReporting\Models\RollUp;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Imega\DataReporting\Models\Angus\FinanceProvider;
 
 /**
  * Imega\DataReporting\Models\RollUp\LiveClient
@@ -53,4 +55,9 @@ final class LiveClient extends RollUpModel
         'total_active_no_demo_test' => 'integer',
         'sampled_at'                => 'datetime',
     ];
+
+    public function financeProvider(): BelongsTo
+    {
+        return $this->belongsTo(FinanceProvider::class);
+    }
 }

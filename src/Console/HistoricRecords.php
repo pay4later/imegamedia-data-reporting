@@ -46,7 +46,7 @@ final class HistoricRecords extends Command
         $start = Carbon::createFromFormat('Y-m-d H:i:s', $this->argument('start') . ' 00:00:00');
         $end = Carbon::createFromFormat('Y-m-d H:i:s', $this->argument('end') . ' 23:59:59');
 
-        for ($d = $start; $d < $end; $d->addHour()) {
+        for ($d = $start; $d <= $end; $d->addHour()) {
             $carbonStart = clone $d->setMinutes(0)->setSeconds(0);
             $carbonEnd = clone $d->setMinutes(59)->setSeconds(59);
 

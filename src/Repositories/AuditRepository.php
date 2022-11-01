@@ -32,10 +32,7 @@ final class AuditRepository
      */
     public function getDateBetweenApplicationCounts(CarbonInterface $start, CarbonInterface $end): Collection
     {
-        return $this->applicationCounts(
-            clone $start->setTime(0,0),
-            clone $end->setTime(23,59,59)
-        );
+        return $this->applicationCounts($start, $end);
     }
 
     private function applicationCounts(CarbonInterface $start, CarbonInterface $end): Collection

@@ -25,10 +25,11 @@ final class AcceptanceRateRepository
     {
         $qb =  AcceptanceRate::query()
             ->select([
-                'finance_providers.id AS finance_providers_id',
-                'finance_providers.alias AS finance_providers_alias',
+                'finance_provider_id'
             ])
-            ->join('finance_providers', 'finance_provider_id', 'finance_providers.id')
+            ->with(['financeProvider' => function($query) {
+                $query->select('id', 'alias');
+            }])
             ->selectRaw('AVG(acceptance_rate) as average_acceptance_rate')
             ->whereBetween('sampled_at', [$startDate, $endDate]);
 
@@ -36,6 +37,6 @@ final class AcceptanceRateRepository
             $qb->where('client_id', $clientId);
         }
 
-        return $qb->groupBy('finance_provider_id', 'finance_providers_id', 'finance_providers_alias')->get();
+        return $qb->groupBy('finance_provider_id')->get();
     }
 }

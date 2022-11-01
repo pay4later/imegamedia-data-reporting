@@ -26,12 +26,13 @@ final class TotalApplicationRepository
         $qb =  TotalApplication::query()
             ->select([
                 'finance_provider_id',
-                'finance_providers.alias AS finance_providers_alias',
             ])
-            ->join('finance_providers', 'finance_provider_id', 'finance_providers.id')
+            ->with(['financeProvider' => function($query) {
+                $query->select('id', 'alias');
+            }])
             ->selectRaw('SUM(count) as application_count')
             ->whereBetween('sampled_at', [$startDate, $endDate])
-            ->groupBy('finance_provider_id', 'finance_providers.alias');
+            ->groupBy('finance_provider_id');
 
         if ($clientId) {
             $qb->where('client_id', $clientId);
@@ -56,12 +57,13 @@ final class TotalApplicationRepository
         $qb =  TotalApplication::query()
             ->select([
                 'finance_provider_id',
-                'finance_providers.alias AS finance_providers_alias',
             ])
-            ->join('finance_providers', 'finance_provider_id', 'finance_providers.id')
+            ->with(['financeProvider' => function($query) {
+                $query->select('id', 'alias');
+            }])
             ->selectRaw('SUM(value) as application_value')
             ->whereBetween('sampled_at', [$startDate, $endDate])
-            ->groupBy('finance_provider_id', 'finance_providers.alias');
+            ->groupBy('finance_provider_id');
 
         return $qb->get();
     }

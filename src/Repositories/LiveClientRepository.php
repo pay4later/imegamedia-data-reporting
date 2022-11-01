@@ -64,11 +64,12 @@ final class LiveClientRepository
     {
         return LiveClient::query()
             ->select([
-            'finance_provider_id',
-            'sampled_at',
-            'finance_providers.alias AS finance_provider_alias'
+                'finance_provider_id',
+                'sampled_at',
             ])
-            ->join('finance_providers', 'finance_provider_id', 'finance_providers.id')
+            ->with(['financeProvider' => function($query) {
+                $query->select('id', 'alias');
+            }])
             ->where('sampled_at', $date)
             ->orderBy('finance_provider_id','DESC');
     }

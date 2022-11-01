@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ApprovedApplication wherePaymentRequested($value)
  * @method static Builder|ApprovedApplication whereUpdatedAt($value)
  */
-final class ApprovedApplication extends Model
+final class ApprovedApplication extends AngusModel
 {
 
     protected $casts = [

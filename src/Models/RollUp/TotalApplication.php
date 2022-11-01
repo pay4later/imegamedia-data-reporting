@@ -3,6 +3,8 @@
 namespace Imega\DataReporting\Models\RollUp;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Imega\DataReporting\Models\Angus\FinanceProvider;
 
 /**
  * Imega\DataReporting\Models\RollUp\TotalApplication
@@ -38,4 +40,9 @@ final class TotalApplication extends RollUpModel
         'value'      => 'float',
         'sampled_at' => 'datetime',
     ];
+
+    public function financeProvider(): BelongsTo
+    {
+        return $this->belongsTo(FinanceProvider::class);
+    }
 }
