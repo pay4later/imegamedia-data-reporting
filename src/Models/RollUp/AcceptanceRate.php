@@ -29,8 +29,7 @@ final class AcceptanceRate extends RollUpModel
         'sampled_at',
         'client_id',
         'finance_provider_id',
-        'acceptance_rate',
-        'total_unique_csns',
+        'total_unique_declined_csns',
         'total_unique_accepted_csns',
     ];
 
@@ -40,8 +39,7 @@ final class AcceptanceRate extends RollUpModel
      * @var array
      */
     protected $casts = [
-        'acceptance_rate'            => 'integer',
-        'total_unique_csns'          => 'integer',
+        'total_unique_declined_csns' => 'integer',
         'total_unique_accepted_csns' => 'integer',
         'sampled_at'                 => 'datetime',
     ];
