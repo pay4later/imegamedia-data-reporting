@@ -12,6 +12,10 @@ final class CsnAuditRepository
 {
     private string $tableAlias;
 
+    private const COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS = 'total_unique_accepted_csns';
+    private const COLUMN_TOTAL_UNIQUE_DECLINED_CSNS = 'total_unique_declined_csns';
+
+
     /**
      * Gets the acceptance rates for all finance providers within the last hour
      *
@@ -39,24 +43,25 @@ final class CsnAuditRepository
 
     private function acceptanceRates(CarbonInterface $start, CarbonInterface $end): Collection
     {
-        $qb = CsnAudit::query()
+        return CsnAudit::query()
             ->from('csn_audits', $this->tableAlias = 'ca1')
             ->select([$this->tableAlias . '.finance_provider_id', $this->tableAlias . '.client_id'])
             ->selectRaw('"' . $end->format('Y-m-d H:00:00') . '" AS sampled_at')
-            ->selectRaw('0 AS acceptance_rate')
             ->groupBy([$this->tableAlias . '.finance_provider_id', $this->tableAlias . '.client_id'])
 
             ->selectSub(
                 $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.DECLINED')]),
-                'total_unique_declined_csns'
+                self::COLUMN_TOTAL_UNIQUE_DECLINED_CSNS
             )
 
             ->selectSub(
                 $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.APPROVED')]),
-                'total_unique_accepted_csns'
-            );
+                self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS
+            )
 
-        return $qb->get();
+            ->having(self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS, '>', 0)
+            ->orHaving(self::COLUMN_TOTAL_UNIQUE_DECLINED_CSNS, '>', 0)
+            ->get();
     }
 
     private function totalUniqueCsnsQueryBuilder(CarbonInterface $start, CarbonInterface $end): Builder

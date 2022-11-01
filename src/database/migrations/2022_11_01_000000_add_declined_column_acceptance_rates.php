@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::connection('data-reporting-roll-up')->table('acceptance_rates', static function (Blueprint $table): void {
             $table->dropColumn(['total_unique_csns', 'acceptance_rate']);
-            $table->integer('total_unique_declined_csns');
+            $table->integer('total_unique_declined_csns')->after('total_unique_accepted_csns');
         });
     }
 
