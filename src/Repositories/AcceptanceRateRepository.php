@@ -5,6 +5,7 @@ namespace Imega\DataReporting\Repositories;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Imega\DataReporting\Models\RollUp\AcceptanceRate;
+use Imega\DataReporting\Models\Angus\CsnAudit;
 
 final class AcceptanceRateRepository
 {
@@ -30,13 +31,19 @@ final class AcceptanceRateRepository
             ->with(['financeProvider' => function($query) {
                 $query->select('id', 'alias');
             }])
-            ->selectRaw('AVG(acceptance_rate) as average_acceptance_rate')
+            ->selectRaw('SUM(total_unique_accepted_csns) as total_accepted_csns')
+            ->selectRaw('SUM(total_unique_declined_csns) as total_declined_csns')
             ->whereBetween('sampled_at', [$startDate, $endDate]);
 
         if ($clientId) {
             $qb->where('client_id', $clientId);
         }
 
-        return $qb->groupBy('finance_provider_id')->get();
+        $qb->groupBy('finance_provider_id');
+
+        return $qb->get()->map(static function (AcceptanceRate $row) {
+            $row->acceptance_rate = $row->calculateAcceptedRatePercentage($row->total_accepted_csns, $row->total_declined_csns);
+            return $row;
+        });
     }
 }

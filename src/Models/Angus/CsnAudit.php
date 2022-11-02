@@ -43,13 +43,4 @@ final class CsnAudit extends AngusModel
         return $query->whereIn('imega_status', $statuses);
     }
 
-    public function calculateAcceptedRatePercentage(int $acceptedCsns, int $uniqueCsns): int
-    {
-        if ($acceptedCsns !== 0 && $uniqueCsns !== 0) {
-            return ($acceptedCsns / $uniqueCsns) * 100;
-        }
-
-        return 0;
-    }
-
 }
