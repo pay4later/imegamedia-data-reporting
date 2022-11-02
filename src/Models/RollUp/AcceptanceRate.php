@@ -48,4 +48,13 @@ final class AcceptanceRate extends RollUpModel
     {
         return $this->belongsTo(FinanceProvider::class);
     }
+
+    public function calculateAcceptedRatePercentage(int $acceptedCsns, int $declinedCsns): int
+    {
+        if ($acceptedCsns !== 0 || $declinedCsns !== 0) {
+            return ($acceptedCsns / ($acceptedCsns + $declinedCsns)) * 100;
+        }
+
+        return 0;
+    }
 }
