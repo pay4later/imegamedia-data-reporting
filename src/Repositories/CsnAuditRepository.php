@@ -12,8 +12,9 @@ final class CsnAuditRepository
 {
     private string $tableAlias;
 
-    private const COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS = 'total_unique_accepted_csns';
-    private const COLUMN_TOTAL_UNIQUE_DECLINED_CSNS = 'total_unique_declined_csns';
+    private const COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS  = 'total_unique_accepted_csns';
+    private const COLUMN_TOTAL_UNIQUE_DECLINED_CSNS  = 'total_unique_declined_csns';
+    private const COLUMN_TOTAL_UNIQUE_COMPLETED_CSNS = 'total_unique_completed_csns';
 
 
     /**
@@ -59,8 +60,14 @@ final class CsnAuditRepository
                 self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS
             )
 
+            ->selectSub(
+                $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.COMPLETED')]),
+                self::COLUMN_TOTAL_UNIQUE_COMPLETED_CSNS
+            )
+
             ->having(self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS, '>', 0)
             ->orHaving(self::COLUMN_TOTAL_UNIQUE_DECLINED_CSNS, '>', 0)
+            ->orHaving(self::COLUMN_TOTAL_UNIQUE_COMPLETED_CSNS, '>', 0)
             ->get();
     }
 
