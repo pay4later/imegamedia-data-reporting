@@ -1,5 +1,7 @@
 <?php
 
+use Imega\DataReporting\Models\Angus\CsnAudit;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -35,10 +37,10 @@ return [
     |
     */
     'csn-statuses'    => [
-        'APPROVED'  => 'approved',
-        'COMPLETED' => 'completed',
-        'DECLINED'  => 'declined',
-        'REFERRED'  => 'referred',
+        'APPROVED'  => CsnAudit::IMEGA_STATUS_APPROVED,
+        'COMPLETED' => CsnAudit::IMEGA_STATUS_COMPLETED,
+        'DECLINED'  => CsnAudit::IMEGA_STATUS_DECLINED,
+        'REFERRED'  => CsnAudit::IMEGA_STATUS_REFERRED,
     ],
 
     /*

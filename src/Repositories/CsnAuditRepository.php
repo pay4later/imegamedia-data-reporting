@@ -51,17 +51,17 @@ final class CsnAuditRepository
             ->groupBy([$this->tableAlias . '.finance_provider_id', $this->tableAlias . '.client_id'])
 
             ->selectSub(
-                $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.DECLINED')]),
+                $this->totalUniqueCsnsQueryBuilder($start, $end)->status(config('data-reporting.csn-statuses.DECLINED')),
                 self::COLUMN_TOTAL_UNIQUE_DECLINED_CSNS
             )
 
             ->selectSub(
-                $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.APPROVED')]),
+                $this->totalUniqueCsnsQueryBuilder($start, $end)->status(config('data-reporting.csn-statuses.APPROVED')),
                 self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS
             )
 
             ->selectSub(
-                $this->totalUniqueCsnsQueryBuilder($start, $end)->statusOptions([config('data-reporting.csn-statuses.COMPLETED')]),
+                $this->totalUniqueCsnsQueryBuilder($start, $end)->status(config('data-reporting.csn-statuses.COMPLETED')),
                 self::COLUMN_TOTAL_UNIQUE_COMPLETED_CSNS
             )
 
@@ -84,7 +84,9 @@ final class CsnAuditRepository
     {
         return $query
             ->whereIn('id', CsnAudit::selectRaw('MAX(id)')
-                ->createdBetween($start, $end)
-                ->groupBy('order_id'));
+            ->whereColumn('finance_provider_id', $this->tableAlias . '.finance_provider_id')
+            ->whereColumn('client_id', $this->tableAlias . '.client_id')
+            ->createdBetween($start, $end)
+            ->groupBy(['order_id']));
     }
 }
