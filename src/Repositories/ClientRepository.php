@@ -123,6 +123,7 @@ final class ClientRepository
             ->select([
                 'merchant_sites.merchant_id AS merchant_id',
                 'merchant_sites.name AS merchant_site_name',
+                'merchants.name AS merchant_name',
                 'clients.merchant_site_id AS merchant_site_id',
                 'clients.id AS client_id',
                 'clients.name AS  client_name',
@@ -132,6 +133,7 @@ final class ClientRepository
                 'ecommerce_platforms.name AS  ecommerce_platform_name',
             ])
             ->join('merchant_sites', 'clients.merchant_site_id', 'merchant_sites.id')
+            ->join('merchants', 'merchant_sites.merchant_id', 'merchants.id')
             ->join('finance_providers', 'clients.finance_provider', 'finance_providers.id')
             ->join('ecommerce_platforms', 'clients.ecommerce_platform_id', 'ecommerce_platforms.id')
             ->whereNotNull('merchant_sites.merchant_id')
@@ -158,6 +160,9 @@ final class ClientRepository
         $clients = $clients->orderBy('merchant_sites.merchant_id')->get();
 
         foreach ($clients as $client) {
+            $response[$client->merchant_id] = [
+                'merchant_name' => $client->merchant_name
+            ];
             if (!isset($response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id])) {
                 $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id] = [
                     'website_name' => $client->merchant_site_name,
