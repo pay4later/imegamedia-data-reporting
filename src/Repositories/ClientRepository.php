@@ -124,6 +124,7 @@ final class ClientRepository
                 'merchant_sites.merchant_id AS merchant_id',
                 'merchant_sites.name AS merchant_site_name',
                 'merchants.name AS merchant_name',
+                'merchants.created_at AS merchant_created',
                 'clients.merchant_site_id AS merchant_site_id',
                 'clients.id AS client_id',
                 'clients.name AS  client_name',
@@ -162,7 +163,8 @@ final class ClientRepository
         foreach ($clients as $client) {
             if (!isset($response[$client->merchant_id]['merchant_name'])) {
                 $response[$client->merchant_id] = [
-                    'merchant_name' => $client->merchant_name
+                    'merchant_name' => $client->merchant_name,
+                    'merchant_created' => $client->merchant_created
                 ];
             }
             if (!isset($response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id])) {
