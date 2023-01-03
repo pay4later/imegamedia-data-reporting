@@ -4,13 +4,32 @@ namespace Imega\DataReporting\Repositories;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Imega\DataReporting\Models\Angus\Client;
 use Imega\DataReporting\Models\Angus\FinanceProvider;
 use Imega\DataReporting\Models\Angus\Merchant;
 use Imega\DataReporting\Models\Angus\MerchantSite;
 
 final class MerchantRepository
 {
+    /**
+     * Fetches a list of live merchant counts from the Angus system, used for daily report
+     *
+     * @return Collection
+     */
+    public function getLiveMerchantCounts(): Collection
+    {
+        $qb = Merchant::query()
+            ->selectRaw('"' . Carbon::now()->format('Y-m-d 00:00:00') . '" AS sampled_at');
+
+        $qb
+            ->selectSub(Merchant::totalActiveLive(), 'total_active_live')
+            ->selectSub(Merchant::totalActiveTest(), 'total_active_test');
+
+        return $qb->get();
+    }
+
     /**
      * A list of merchants by date with active integrations
      *
