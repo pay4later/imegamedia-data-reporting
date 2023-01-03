@@ -160,9 +160,11 @@ final class ClientRepository
         $clients = $clients->orderBy('merchant_sites.merchant_id')->get();
 
         foreach ($clients as $client) {
-            $response[$client->merchant_id] = [
-                'merchant_name' => $client->merchant_name
-            ];
+            if (!isset($response[$client->merchant_id]['merchant_name'])) {
+                $response[$client->merchant_id] = [
+                    'merchant_name' => $client->merchant_name
+                ];
+            }
             if (!isset($response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id])) {
                 $response[$client->merchant_id]['merchant_sites'][$client->merchant_site_id] = [
                     'website_name' => $client->merchant_site_name,
