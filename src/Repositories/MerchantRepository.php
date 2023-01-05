@@ -6,7 +6,6 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Imega\DataReporting\Models\Angus\Client;
 use Imega\DataReporting\Models\Angus\FinanceProvider;
 use Imega\DataReporting\Models\Angus\Merchant;
 use Imega\DataReporting\Models\Angus\MerchantSite;
@@ -25,9 +24,9 @@ final class MerchantRepository
 
         $qb
             ->selectSub(Merchant::totalActiveLive(), 'total_active_live')
-            ->selectSub(Merchant::totalActiveTest(), 'total_active_test');
+            ->selectSub('SELECT COUNT(*) FROM (' . Merchant::totalActiveTest()->toSql() . ') as count', 'total_active_test');
 
-        return $qb->get();
+        return $qb->groupBy('sampled_at')->get();
     }
 
     /**
@@ -73,7 +72,7 @@ final class MerchantRepository
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
-        ?array $merchantSiteStatuses = null
+        ?array          $merchantSiteStatuses = null
     ): Collection
     {
         $dekoProvider = (new FinanceProviderRepository)->getFinanceProviderIdByAlias(FinanceProvider::ALIAS_DEKO);

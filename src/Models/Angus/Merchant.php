@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Imega\DataReporting\Enums\MerchantSiteStatus;
 
 /**
@@ -56,44 +57,20 @@ final class Merchant extends AngusModel
     }
 
     /**
-     * Scope a query to only include merchants that have active site(s).
-     *
-     * @param EloquentBuilder $query
-     * @return EloquentBuilder
-     */
-    public function scopeActive(EloquentBuilder $query): EloquentBuilder
-    {
-        return $query->join('merchant_sites AS sites', fn (JoinClause $join) => $join
-            ->on('sites.merchant_id', '=', 'merchants.id')
-            ->where('sites.status', MerchantSiteStatus::PAID_ENABLED)
-        );
-    }
-
-    /**
-     * Scope a query to only include merchants of a given test_mode.
-     *
-     * @param EloquentBuilder $query
-     * @param bool $type
-     * @return EloquentBuilder
-     */
-    public function scopeTestMode(EloquentBuilder $query, bool $type): EloquentBuilder
-    {
-        return $query->join('merchant_sites AS sites', 'sites.merchant_id', '=', 'merchants.id')
-            ->join('clients AS c', fn (JoinClause $join) => $join
-                ->on('c.merchant_site_id', '=', 'sites.id')
-                ->where('test_mode', $type)
-            );
-    }
-
-    /**
      * @return EloquentBuilder
      */
     public static function totalActiveLive(): EloquentBuilder
     {
-        return Merchant::selectRaw('COUNT(merchants.id)')
-            ->active()
-            ->testMode(false)
-            ->whereNull('deleted_at');
+        return Merchant::selectRaw('COUNT(DISTINCT merchants.id)')
+            ->join('merchant_sites AS ' . $merchantSiteAlias = Str::random(4), fn(JoinClause $join) => $join
+                ->on($merchantSiteAlias . '.merchant_id', '=', 'merchants.id')
+                ->where($merchantSiteAlias . '.status', MerchantSiteStatus::PAID_ENABLED)
+            )
+            ->join('clients AS ' . $clientAlias = Str::random(4), fn(JoinClause $join) => $join
+                ->on($clientAlias . '.merchant_site_id', '=', $merchantSiteAlias . '.id')
+                ->where($clientAlias . '.test_mode', false)
+            )
+            ->whereNull('merchants.deleted_at');
     }
 
     /**
@@ -101,9 +78,11 @@ final class Merchant extends AngusModel
      */
     public static function totalActiveTest(): EloquentBuilder
     {
-        return Merchant::selectRaw('COUNT(merchants.id)')
-            ->active() // merchant_site at least one paid-enabled
-            ->testMode(true) // all clients.test_mode = true
-            ->whereNull('deleted_at');
+        return Merchant::selectRaw('DISTINCT merchants.id')
+            ->leftJoin('merchant_sites', 'merchants.id', '=', 'merchant_sites.merchant_id')
+            ->join('clients', 'merchant_sites.id', '=', 'clients.merchant_site_id')
+            ->whereNull('merchants.deleted_at')
+            ->groupBy('merchants.id')
+            ->havingRaw('SUM(clients.test_mode) = COUNT(clients.id)');
     }
 }
