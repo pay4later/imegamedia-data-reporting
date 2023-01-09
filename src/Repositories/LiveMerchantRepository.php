@@ -5,7 +5,7 @@ namespace Imega\DataReporting\Repositories;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Carbon\CarbonInterface;
-use Imega\DataReporting\Models\RollUp\LiveClient;
+use Imega\DataReporting\Models\RollUp\LiveMerchant;
 
 final class LiveMerchantRepository
 {
@@ -48,7 +48,7 @@ final class LiveMerchantRepository
         CarbonInterface $date,
     ): Builder
     {
-        return LiveClient::query()
+        return LiveMerchant::query()
             ->select([
                 'sampled_at',
             ])
