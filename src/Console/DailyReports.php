@@ -4,7 +4,9 @@ namespace Imega\DataReporting\Console;
 
 use Illuminate\Console\Command;
 use Imega\DataReporting\Models\RollUp\LiveClient;
+use Imega\DataReporting\Models\RollUp\LiveMerchant;
 use Imega\DataReporting\Repositories\ClientRepository;
+use Imega\DataReporting\Repositories\MerchantRepository;
 
 final class DailyReports extends Command
 {
@@ -23,12 +25,14 @@ final class DailyReports extends Command
     protected $description = 'Generated roll-up reports saved every day.';
 
     private ClientRepository $clientRepo;
+    private MerchantRepository $merchantRepo;
 
-    public function __construct(ClientRepository $clientRepository)
+    public function __construct(ClientRepository $clientRepository, MerchantRepository $merchantRepository)
     {
         parent::__construct();
 
         $this->clientRepo = $clientRepository;
+        $this->merchantRepo = $merchantRepository;
     }
 
     /**
@@ -39,6 +43,7 @@ final class DailyReports extends Command
     public function handle(): void
     {
         $this->liveClientCounts();
+        $this->liveMerchantCounts();
     }
 
     private function liveClientCounts(): void
@@ -46,6 +51,14 @@ final class DailyReports extends Command
         LiveClient::upsert(
             $this->clientRepo->getLiveClientCounts()->toArray(),
             ['finance_provider_id', 'sampled_at'],
+        );
+    }
+
+    private function liveMerchantCounts(): void
+    {
+        LiveMerchant::upsert(
+            $this->merchantRepo->getLiveMerchantCounts()->toArray(),
+            ['sampled_at'],
         );
     }
 }
