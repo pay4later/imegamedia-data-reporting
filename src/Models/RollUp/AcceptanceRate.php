@@ -12,6 +12,9 @@ use Imega\DataReporting\Models\Angus\FinanceProvider;
  * @property int $client_id
  * @property int $finance_provider_id
  * @property int $acceptance_rate
+ * @property float $cost_unique_accepted_csns
+ * @property float $cost_unique_completed_csns
+ * @property float $cost_unique_declined_csns
  * @property int $total_unique_accepted_csns
  * @property int $total_unique_completed_csns
  * @property int $total_unique_declined_csns
@@ -30,6 +33,9 @@ final class AcceptanceRate extends RollUpModel
         'sampled_at',
         'client_id',
         'finance_provider_id',
+        'cost_unique_accepted_csns',
+        'cost_unique_completed_csns',
+        'cost_unique_declined_csns',
         'total_unique_accepted_csns',
         'total_unique_completed_csns',
         'total_unique_declined_csns',
@@ -41,6 +47,9 @@ final class AcceptanceRate extends RollUpModel
      * @var array
      */
     protected $casts = [
+        'cost_unique_accepted_csns'   => 'decimal',
+        'cost_unique_completed_csns'  => 'decimal',
+        'cost_unique_declined_csns'   => 'decimal',
         'total_unique_accepted_csns'  => 'integer',
         'total_unique_completed_csns' => 'integer',
         'total_unique_declined_csns'  => 'integer',

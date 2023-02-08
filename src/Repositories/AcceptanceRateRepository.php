@@ -24,7 +24,7 @@ final class AcceptanceRateRepository
         ?int $clientId = null,
     ): Collection
     {
-        $qb =  AcceptanceRate::query()
+        $qb = AcceptanceRate::query()
             ->select([
                 'finance_provider_id'
             ])
@@ -33,6 +33,8 @@ final class AcceptanceRateRepository
             }])
             ->selectRaw('SUM(total_unique_accepted_csns) as total_accepted_csns')
             ->selectRaw('SUM(total_unique_declined_csns) as total_declined_csns')
+            ->selectRaw('SUM(cost_unique_accepted_csns) as cost_accepted_csns')
+            ->selectRaw('SUM(cost_unique_declined_csns) as cost_declined_csns')
             ->whereBetween('sampled_at', [$startDate, $endDate]);
 
         if ($clientId) {

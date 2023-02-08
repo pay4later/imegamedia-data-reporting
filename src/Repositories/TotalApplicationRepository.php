@@ -23,7 +23,7 @@ final class TotalApplicationRepository
         ?int $clientId = null,
     ): Collection
     {
-        $qb =  TotalApplication::query()
+        $qb = TotalApplication::query()
             ->select([
                 'finance_provider_id',
             ])
@@ -31,39 +31,13 @@ final class TotalApplicationRepository
                 $query->select('id', 'alias');
             }])
             ->selectRaw('SUM(count) as application_count')
+            ->selectRaw('SUM(value) as application_value')
             ->whereBetween('sampled_at', [$startDate, $endDate])
             ->groupBy('finance_provider_id');
 
         if ($clientId) {
             $qb->where('client_id', $clientId);
         }
-
-        return $qb->get();
-    }
-
-    /**
-     * Gets the value of applications between two dates
-     *
-     * @param CarbonInterface $startDate
-     * @param CarbonInterface $endDate
-     * @return Collection
-     */
-    public function getApplicationValueQuery
-    (
-        CarbonInterface $startDate,
-        CarbonInterface $endDate,
-    ): Collection
-    {
-        $qb =  TotalApplication::query()
-            ->select([
-                'finance_provider_id',
-            ])
-            ->with(['financeProvider' => function($query) {
-                $query->select('id', 'alias');
-            }])
-            ->selectRaw('SUM(value) as application_value')
-            ->whereBetween('sampled_at', [$startDate, $endDate])
-            ->groupBy('finance_provider_id');
 
         return $qb->get();
     }

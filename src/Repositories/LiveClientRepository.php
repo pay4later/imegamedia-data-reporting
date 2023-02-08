@@ -10,45 +10,26 @@ use Imega\DataReporting\Models\RollUp\LiveClient;
 final class LiveClientRepository
 {
     /**
-     * Get a list of all active clients counts by date filter.
+     * Get a list of all live clients counts by date filter.
      *
      * @param CarbonInterface $date
+     * @param string|null $field
      * @return Collection
      */
-    public function getActiveClientsByDate
+    public function getLiveClientsByDate
     (
         CarbonInterface $date,
+        string          $field = null
     ): Collection
     {
-        return $this->liveClientQueryBuilder($date)->addSelect('total_active')->get();
-    }
+        $columns = match ($field) {
+            'total_active' => ['total_active'],
+            'total_active_live' => ['total_active_live'],
+            'total_active_test' => ['total_active_test'],
+            default => ['total_active', 'total_active_live', 'total_active_test'],
+        };
 
-    /**
-     * Get a list of active live clients counts by date filter.
-     *
-     * @param CarbonInterface $date
-     * @return Collection
-     */
-    public function getActiveLiveClientsByDate
-    (
-        CarbonInterface $date,
-    ): Collection
-    {
-        return $this->liveClientQueryBuilder($date)->addSelect('total_active_live')->get();
-    }
-
-    /**
-     * Get a list of active test clients counts by date filter.
-     *
-     * @param CarbonInterface $date
-     * @return Collection
-     */
-    public function getActiveTestClientsByDate
-    (
-        CarbonInterface $date,
-    ): Collection
-    {
-        return $this->liveClientQueryBuilder($date)->addSelect('total_active_test')->get();
+        return $this->liveClientQueryBuilder($date)->addSelect($columns)->get();
     }
 
     /**
@@ -67,10 +48,10 @@ final class LiveClientRepository
                 'finance_provider_id',
                 'sampled_at',
             ])
-            ->with(['financeProvider' => function($query) {
+            ->with(['financeProvider' => function ($query) {
                 $query->select('id', 'alias');
             }])
             ->where('sampled_at', $date)
-            ->orderBy('finance_provider_id','DESC');
+            ->orderBy('finance_provider_id', 'DESC');
     }
 }
