@@ -16,7 +16,7 @@ final class TotalApplicationRepository
      * @param int|null $clientId
      * @return Collection
      */
-    public function getApplicationCountQuery
+    public function getTotalApplicationQuery
     (
         CarbonInterface $startDate,
         CarbonInterface $endDate,
