@@ -42,7 +42,7 @@ final class CsnAuditRepository
             ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.APPROVED')) . ' THEN 1 ELSE 0 END) AS ' . self::COLUMN_TOTAL_UNIQUE_ACCEPTED_CSNS)
             ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.COMPLETED')) . ' THEN 1 ELSE 0 END) AS ' . self::COLUMN_TOTAL_UNIQUE_COMPLETED_CSNS)
             ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.DECLINED')) . ' THEN audits.orderamount ELSE 0 END) AS cost_unique_declined_csns')
-            ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.APPROVED')) . ' THEN audits.orderamount ELSE 0 END) AS cost_unique_approved_csns')
+            ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.APPROVED')) . ' THEN audits.orderamount ELSE 0 END) AS cost_unique_accepted_csns')
             ->selectRaw('SUM(CASE WHEN csn_audits.imega_status & ' . CsnAudit::getImegaFlagStatus(config('data-reporting.csn-statuses.COMPLETED')) . ' THEN audits.orderamount ELSE 0 END) AS cost_unique_completed_csns')
             ->join('audits', 'csn_audits.audit_id', '=', 'audits.id')
             ->whereNotNull('csn_audits.audit_id')
