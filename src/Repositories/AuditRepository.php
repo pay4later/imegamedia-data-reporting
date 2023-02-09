@@ -17,7 +17,7 @@ final class AuditRepository
      */
     public function getLastHourApplicationCounts(): Collection
     {
-        return $this->applicationCounts(
+        return $this->getDateBetweenApplicationCounts(
             Carbon::now()->subHours(),
             Carbon::now()
         );
@@ -31,11 +31,6 @@ final class AuditRepository
      * @return Collection
      */
     public function getDateBetweenApplicationCounts(CarbonInterface $start, CarbonInterface $end): Collection
-    {
-        return $this->applicationCounts($start, $end);
-    }
-
-    private function applicationCounts(CarbonInterface $start, CarbonInterface $end): Collection
     {
         return Audit::query()
             ->selectRaw('CAST(retailer AS UNSIGNED) as finance_provider_id')
